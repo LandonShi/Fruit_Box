@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <title>工具信息编辑</title>
+    <link rel="stylesheet" type="text/css" href="../../static/css/me.css" th:href="@{/css/me.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.css">
+</head>
+<body style="background-color:  #2e9b56;">
+    <!-- 导航 -->
+    <nav class="ui attached segment pointing" style="padding: 0;">
+        <div class="nav-top">
+            <div class="ui secondary stackable menu">
+                <div class="item right"></div>
+                <a href="#" class="item head-a">首页</a>
+                <a href="kitList" class="item head-a">工具管理</a>
+                <a href="kitUpload" class="item head-a">工具上传</a>
+                <a th:if="${null != session.user}" href="personalHomepage" th:text="${session.user.nickname}" class="item head-a"></a>
+                <a th:if="${null != session.user}" href="foreLogout" class="item head-a">退出</a>
+            </div>
+        </div>
+    </nav>
+
+    <div id="categoryInfo" >
+        <div style="width:100%;height:700px; margin-top: 20px;margin-top: 25px;">
+            <!-- 新增 -->
+            <div class="m-container-small m-padded-tb-tiny">
+                <div class="ui container">
+                    <div class="ui top attached segment">
+                        <div class="column">
+                            <div class="ui breadcrumb">
+                                <div class="breadcrumb-a" style="color: black">
+                                    <i class="ui home icon blue"></i>所在位置：
+                                    <a href="personalHomepage" class="section" style="color: gray;">个人中心</a>
+                                    <div class="divider"> / </div>
+                                    <a href="kitCategoryList" class="section" style="color: gray;">工具管理</a>
+                                    <div class="divider"> / </div>
+                                    <a href="#" class="section" style="color: gray;">{{ category.name}}</a>
+                                    <div class="divider"> / </div>
+                                    <a href="#">{{bean.name}}</a>
+                                    <div class="divider"> / </div>
+                                    <div class="active section">编辑</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui top attached segment orange">
+                        <form class="ui form">
+                        <div class="field">
+                            <div class="ui left labeled input">
+                                <label class="ui teal basic label">隶属分类ID：</label>
+                                <input type="text" name="cid" v-model="bean.category.id" readonly="true">
+                            </div>
+                            <div style="margin-top: 10px;"></div>
+                            <div class="ui left labeled input">
+                                <label class="ui teal basic label">ID(不可修改)：</label>
+                                <input v-model="bean.id" type="text" name="id" readonly="true">
+                            </div>
+                            <div style="margin-top: 10px;"></div>
+                            <div class="ui left labeled input">
+                                <label class="ui teal basic label">工具名称：</label>
+                                <input v-model.trim="bean.name" type="text" name="name" placeholder="不超过10字">
+                            </div>
+                            <div style="margin-top: 10px;"></div>
+                            <div class="ui left labeled input">
+                                <label class="ui teal basic label">简介信息：</label>
+                                <input v-model.trim="bean.description" type="text" name="description" placeholder="不超过50字">
+                            </div>
+                            <div style="margin-top: 10px;"></div>
+                            <div class="ui left labeled input">
+                                <label class="ui teal basic label">下载次数：</label>
+                                <input readonly="true" v-model.trim="bean.downloadTimes" type="text" name="downloadTimes" placeholder="初始为0">
+                            </div>
+                            <div style="margin-top: 10px;"></div>
+                            <div class="ui left labeled input">
+                                <label class="ui teal basic label">工具状态：</label>
+                                <input v-model.trim="bean.flag" type="text" name="flag" placeholder="转载 或 原创">
+                            </div>
+                            <div style="margin-top: 10px;"></div>
+                            <div class="ui left labeled input">
+                                <label class="ui teal basic label">上传文件：</label>
+                                <input type="file" name="file" @change="getFile($event)" />
+                            </div>
+                        </div>
+                        <div class="ui right aligned container">
+                            <button type="button" class="ui teal button mini" onclick="window.history.go(-1)" >
+                                <i class="arrow left icon"></i>返回
+                            </button>
+                            <a href="#nowhere" @click="update" class="ui orange button mini" ><i class="send icon"></i>提交</a>
+                        </div>
+                    </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}" ></script>
+    <script type="text/javascript" th:src="@{/js/vector.js}"></script>
+    <script type="text/javascript" th:src="@{/js/vue.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/axios.min.js}"></script>
+    <script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>
+    <script>
+        $(function(){
+            var data1 = {
+                uri: 'kits',
+                listURL:'admin_list_kitlist',
+                bean: { id: 0, name: '',description:'',downloadTimes:'',flag:'',updateTime:'',category:{'id':0}},
+                category:'',
+                file: null
+            };
+            //vueModel
+            var vue = new Vue({
+                el: '#categoryInfo',
+                data: data1,
+                mounted: function() {
+                    this.get();
+                },
+                methods: {
+                    get: function(){
+                        var id = getUrlParms("id");
+                        var url = this.uri+"/"+ id;
+                        axios.get(url).then(function(response) {
+                            vue.bean = response.data;
+                            vue.category = vue.bean.category;
+                        })
+                    },
+                    update:function () {
+                        if(!checkEmpty(this.bean.name, "工具名称"))
+                            return;
+                        if (!checkEmpty(this.bean.description, "简介信息"))
+                            return;
+                        if (!checkEmpty(this.bean.flag, "状态"))
+                            return;
+                        if (!checkEmpty(this.bean.updateTime, "更新时间"))
+                            return;
+                        var url = this.uri;
+                        var formData = new FormData();
+                        formData.append("id", this.bean.id);
+                        formData.append("cid",this.bean.category.id);
+                        formData.append("name", this.bean.name);
+                        formData.append("description", this.bean.description);
+                        formData.append("downloadTimes",this.bean.downloadTimes);
+                        formData.append("flag", this.bean.flag);
+                        formData.append("file", this.file);
+                        axios.put(url,formData,{headers:{'Content-Type':'multipart/form-data'}}).then(function(response){
+                            location.href = "kitList?cid=" + vue.category.id;
+                        });
+                    },
+                    getFile: function (event) {
+                        this.file = event.target.files[0];
+                    }
+
+                }
+            });
+        });
+
+        //获取地址栏参数的函数
+        function getUrlParms(para){
+            var search=location.search; //页面URL的查询部分字符串
+            var arrPara=new Array(); //参数数组。数组单项为包含参数名和参数值的字符串，如“para=value”
+            var arrVal=new Array(); //参数值数组。用于存储查找到的参数值
+
+            if(search!=""){
+                var index=0;
+                search=search.substr(1); //去除开头的“?”
+                arrPara=search.split("&");
+
+                for(i in arrPara){
+                    var paraPre=para+"="; //参数前缀。即参数名+“=”，如“para=”
+                    if(arrPara[i].indexOf(paraPre)==0&& paraPre.length<arrPara[i].length){
+                        arrVal[index]=decodeURI(arrPara[i].substr(paraPre.length)); //顺带URI解码避免出现乱码
+                        index++;
+                    }
+                }
+            }
+            if(arrVal.length==1){
+                return arrVal[0];
+            }else if(arrVal.length==0){
+                return null;
+            }else{
+                return arrVal;
+            }
+        }
+        //判断是否为空
+        function checkEmpty(value,text){
+            if(null==value || value.length==0){
+                alert(text+ "不能为空");
+                return false;
+            }
+            return true;
+        }
+    </script>
+</body>
+</html>

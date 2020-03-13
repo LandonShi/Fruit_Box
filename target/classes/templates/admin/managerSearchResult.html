@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8" />
+    <title>查询结果</title>
+    <link rel="stylesheet" type="text/css" href="../../static/css/style.css" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <style>
+        body{
+            margin: 0;
+            width: 100%;
+            color: #fff;
+            background: linear-gradient(-45deg, #ee7752, lightskyblue, darkorange, #23d5ab);
+            background-size: 400% 400%;animation: gradientBG 15s ease infinite;
+        }
+    </style>
+</head>
+<body>
+    <div id="workArea">
+        <nav class="ui inverted attached segment m-padded-tb-mini m-shadow-small" style="padding: 0;">
+            <div class="ui inverted secondary  menu">
+                <h4 class="ui teal header item head-title"><i class="cn flag"></i>管理员</h4>
+                <a href="#" class="item head-a">用户管理</a>
+                <a href="managerKitCategoryList" class="item head-a">工具管理</a>
+                <div class="right menu">
+                    <div id="zhuxiao" class="ui item">
+                        <a href="logout" style="font-size:11px;" type="button" class="ui orange button inverted">退出</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="m-container-small m-padded-tb-big" style="margin-top: 35px;">
+            <div class="ui container">
+                <a class="ui red tag label mini">管理员查询结果</a>
+                <div style="height: 10px;"></div>
+                <div class="ui bottom attached segment">
+                    <div class="ui twelve column grid">
+                        <!-- 查找不到指定信息-->
+                        <table class="ui basic table" style="border: none; text-align: center;">
+                            <thead>
+                                <tr>
+                                    <th style="color: orange; width: 25%;">用户ID</th>
+                                    <th style="color: orange; width: 25%;">账号名</th>
+                                    <th style="color: orange; width: 25%;">密码</th>
+                                    <th style="color: orange; width: 25%;">操作（谨慎）</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-for="manager in managers">
+                                <td>{{manager.id}}</td>
+                                <td>{{manager.name}}</td>
+                                <td>{{manager.password}}</td>
+                                <td >
+                                    <a href="#"><i class="ban icon red"></i><i class="delete icon red"></i>删除</a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div v-show="managers.length == 0"  style="text-align: center; height: 300px;margin: 100px auto;">
+                            <h1 style="color: darkgray; font-size: 20px;">抱歉，没有找到符合条件的人员</h1>
+                            <span style="color: darkgray; font-size: 15px;">您可以再次尝试搜索</span>
+                            <div class="ui inverted divider"></div>
+                            <button type="button" class="ui orange button mini right" onclick="window.history.go(-1)" >
+                                <i class="arrow left icon"></i>返回
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="ui orange button mini right" onclick="window.history.go(-1)" >
+                    <i class="arrow left icon"></i>返回
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="../../static/js/jquery.min.js" th:src="@{/js/jquery.min.js}"></script>
+    <script type="text/javascript" src="../../static/js/vector.js" th:src="@{/js/vector.js}"></script>
+    <script type="text/javascript" src="../../static/js/vue.min.js" th:src="@{/js/vue.min.js}"></script>
+    <script type="text/javascript" src="../../static/js/axios.min.js" th:src="@{/js/axios.min.js}"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            var data1 = {
+                uri: 'managersearch',
+                managers:[]
+            };
+
+            var vue = new Vue({
+                el:'#workArea',
+                data: data1,
+                mounted:function () {
+                    this.getManager();
+                },
+                methods:{
+                    getManager: function() {
+                        var keyword = getUrlParms("keyword");
+                        var url = this.uri + "?keyword=" +keyword;
+                        axios.get(url).then(function (response) {
+                            vue.managers = response.data;
+                        });
+                    }
+                }
+            });
+        })
+
+        //获取地址栏参数的函数
+        function getUrlParms(para){
+            var search=location.search; //页面URL的查询部分字符串
+            var arrPara=new Array(); //参数数组。数组单项为包含参数名和参数值的字符串，如“para=value”
+            var arrVal=new Array(); //参数值数组。用于存储查找到的参数值
+
+            if(search!=""){
+                var index=0;
+                search=search.substr(1); //去除开头的“?”
+                arrPara=search.split("&");
+
+                for(i in arrPara){
+                    var paraPre=para+"="; //参数前缀。即参数名+“=”，如“para=”
+                    if(arrPara[i].indexOf(paraPre)==0&& paraPre.length<arrPara[i].length){
+                        arrVal[index]=decodeURI(arrPara[i].substr(paraPre.length)); //顺带URI解码避免出现乱码
+                        index++;
+                    }
+                }
+            }
+            if(arrVal.length==1){
+                return arrVal[0];
+            }else if(arrVal.length==0){
+                return null;
+            }else{
+                return arrVal;
+            }
+        }
+        //判断是否为空
+        function checkEmpty(value,text){
+            if(null==value || value.length==0){
+                alert(text+ "不能为空");
+                return false;
+            }
+            return true;
+        }
+    </script>
+</body>
+</html>

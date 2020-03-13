@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>果函网——工具下载</title>
+    <link rel="stylesheet" type="text/css" href="../../static/css/me.css" th:href="@{/css/me.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.css">
+    <style>
+        body{
+            margin: 0;
+            width: 100%;
+            color: #fff;
+            background: linear-gradient(-45deg, #ee7752, lightskyblue, darkorange, #23d5ab);
+            background-size: 400% 400%;animation: gradientBG 15s ease infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航 -->
+    <nav class="ui attached segment m-shadow-small" style="padding: 0;">
+        <div class="nav-top">
+            <div class="ui secondary stackable menu">
+                <h4 class="ui teal header item head-title"><i class="cn flag"></i>呆果果的宝函</h4>
+                <a href="#" class="item head-a">首页</a>
+                <a href="#" class="item head-a">视频</a>
+                <a href="kit" class="item head-a">工具</a>
+                <a href="#" class="item head-a">技术摘要</a>
+                <a href="#" class="item head-a">关于本站</a>
+                <div class="item right"></div>
+                <a th:if="${null==session.user}" href="foreLogin" class="item head-a">登录</a>
+                <a th:if="${null==session.user}" href="register" class="item head-a">注册</a>
+                <a th:if="${null != session.user}" href="personalHomepage" th:text="${session.user.nickname}" class="item head-a"></a>
+                <a th:if="${null != session.user}" href="foreLogout" class="item head-a">退出</a>
+            </div>
+        </div>
+    </nav>
+
+    <div id="workArea" class="m-padded-tb-big">
+        <div class="ui container" style="width: 75%; height: 100%;">
+            <a class="ui red tag label mini">工具下载</a>
+            <div style="height: 20px;"></div>
+            <div class="ui stackable grid">
+                <div class="ten wide column">
+                    <div class="ui top attached segment">
+                        <div class="ui middle aligned two column grid">
+                            <div class="column">
+                                <div class="ui breadcrumb">
+                                    <div class="breadcrumb-a" style="color: black">
+                                        <i class="ui home icon blue"></i>所在位置：
+                                        <a href="#" class="section" style="color: gray;">工具</a>
+                                        <div class="divider"> / </div>
+                                        <a href="fore_kit_list" class="section" style="color: gray;">{{ category.name}}</a>
+                                        <div class="divider"> / </div>
+                                        <div class="active section">{{ kit.name}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="column right aligned">
+                                <div class="ui orange inverted basic mini button">
+                                    <a @click="collect(kit.id)"  style="color: gray; font-size: 12px; letter-spacing: 2px; font-weight: 600;" >
+                                        <button class="collectBtn">{{statue}}</button>
+                                    </a>
+                                </div>
+                                <div class="ui orange inverted basic mini button">
+                                    <a  href="fore_kit_list" style="color: gray; font-size: 12px; letter-spacing: 2px; font-weight: 600;" >
+                                        返回专题
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui attached segment">
+                        <div class="ui vertical segment m-padded-tb-tiny">
+                            <div class="ui mobile reversed stackable grid">
+                                <div class="sixteen wide column">
+                                    <div class="ui middle aligned two column grid">
+                                        <div class="column">
+                                            <div class="kit-information">
+                                                <div class="kit-information-header">
+                                                    <h3 class="ui header">
+                                                        <a class="ui image label huge">
+                                                            <img :src="'img/kitSingle/'+firstKitImage.id+'.jpg'"  />
+                                                           {{ kit.name}}
+                                                        </a>
+                                                    </h3>
+                                                </div>
+                                                <div class="ui-info-kit" style="margin-top: 14px;">
+                                                    <div class="ui list" style="color: gray;margin-left: 28px;">
+                                                        <div style="margin: 8px;" v-for="pv in pvs" class="item">{{ pv.property.name }} : <span>{{pv.value}}</span></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="column right aligned">
+                                            <div class="five wide column" style="border-radius: 5px;">
+                                                <a href="#">
+                                                    <img style="width: 315px;" :src="'img/kitSingle/'+firstKitImage.id+'.jpg'" class="ui rounded image"/>
+                                                </a>
+                                            </div>
+                                            <div class="ui divided horizontal list">
+                                                <div class="item">
+                                                    <div class="ui orange button" style="margin-top: 5px; width: 140px;">
+                                                        <a @click="download" style="color: white;letter-spacing: 2px;">
+                                                            <i class="download icon"></i>本地下载<br>
+                                                            <span style="font-size: 11px;">共下载了{{ kit.downloadTimes}}次</span>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <div class="item">
+                                                    <div class="ui green button" style="margin-top: 5px;width: 140px;">
+                                                        <a @click="download"   style="color: white;letter-spacing: 2px;">
+                                                            <i class="download icon"></i>高速下载<br>
+                                                            <span style="font-size: 11px;">共下载了{{ kit.downloadTimes}}次</span>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui attached segment" v-show="showReview">
+                        <div class="kitDetailAndReview">
+                            <a href="#" class="kitReviewTopPartSelectedLink" @click="toggle2Detail">软件信息</a>
+                            <a href="#" class="selected">用户评论<span class="kitReviewTopReviewLinkNumber">{{kit.reviewCount}}</span></a>
+                        </div>
+                        <div  class="kitReviewContentPart ui attached segment" >
+                            <div class="kitReviewItem" v-for="r in reviews">
+                                <div class="kitReviewItemDesc">
+                                    <div class="kitReviewItemUserInfo">
+                                        <img :src="'img/avatar/' + r.user.id + '.jpg'" class="ui avatar image"/>
+                                        {{r.user.nickname}}
+                                    </div>
+                                    <div class="kitReviewItemContent">{{ r.content }}</div>
+                                    <div class="kitReviewItemDate">{{r.createDate}}</div>
+                                    <div style="clear:both"></div>
+                                </div>
+                                <div class="ui fitted divider"></div>
+                            </div>
+                            <!-- 评论 -->
+                            <div class="ui comments">
+                                <div class="comment">
+                                    <div class="content">
+                                        <form class="ui reply form">
+                                            <div class="field">
+                                                <textarea v-model="content" class="reviewArea" disabled="disabled" placeholder="请先登录再评论"></textarea>
+                                            </div>
+                                            <div class="ui middle aligned column grid">
+                                                <div class="column right aligned">
+                                                    <a @click="commitReviewFuc" href="#" class="commentLink">
+                                                        <div class="ui button green basic mini">评论</div>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="ui  attached segment" v-show="showDetail">
+                        <div class="kitDetailDiv">
+                            <a href="#" class="kitDetailTopPartSelectedLink  selected">软件信息</a>
+                            <a href="#" class="kitDetailTopReviewLink" @click="toggle2Review">用户评论 <span class="kitDetailTopReviewLink">
+                                {{kit.reviewCount}}</span>
+                            </a>
+                        </div>
+                        <div class="productDetailImagesPart ui attached segment" style="padding: 5px;">
+                            <div style="margin-top: 12px; padding: 10px;">
+                                <span style="color: black; font-size: 14px; letter-spacing: 2px;">
+                                    <strong>详情:</strong>{{ kit.description}}
+                                </span>
+                            </div>
+                            <div class="ui fitted divider"></div>
+                            <div style="padding: 10px;">
+                                <span style="color: black; font-size: 14px;">
+                                    <strong>软件使用截图：</strong>
+                                </span>
+                                <div style="margin-top: 15px;">
+                                    <img class="imgChange"  v-for="ki in kit.kitDetailImages" :src="'img/kitDetail/'+ki.id+'.jpg'">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="six wide column">
+                    <!-- 排行榜 -->
+                    <div class="ui segment" style="height: 100%;">
+                        <div class="ui aligned column grid">
+                            <div class="column">
+                                <a class="ui red tag label mini">榜单排名</a>
+                                <div style="height: 10px;"></div>
+                            </div>
+                        </div>
+                        <div v-show="showPeopleLove">
+                            <div class="rankingList">
+                                <a @click="toggle2All(sort2)"  class="listAllList dateTime">综合</a>
+                                <a class="listPeople selected">人气<i class="sort content descending icon"></i></a>
+                                <a @click="toggle2UpdateTime"  class="listAllList allList">时间</a>
+                            </div>
+                            <div class="listPeopleContent ui attached segment" style="border: none; padding: 0;">
+                                <div class="ui fluid vertical menu sort-contend">
+                                    <a :href="'fore_kit_download?kid=' + kit.id" class="item" v-for="(kit,index) in c.kits" v-if="index<19">
+                                        <img style="border-radius: 5px;" :src="'img/kitSingle_middle/'+kit.firstKitImage.id+'.jpg'" />
+                                        {{ kit.name }}
+                                        <div class="ui green basic  left pointing label">{{ kit.downloadTimes}}</div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div v-show="showAllList">
+                            <div class="rankingList">
+                                <a  class="allList selected">综合<i class="sort content descending icon"></i></a>
+                                <a  @click="toggle2PeopleLove"  class="listPeople2">人气</a>
+                                <a  @click="toggle2UpdateTime"  class="updateTime2">时间</a>
+                            </div>
+                            <div class="listPeopleContent ui attached segment" style="border: none; padding: 0;">
+                                <div class="ui fluid vertical menu sort-contend">
+                                    <a :href="'fore_kit_download?kid=' + kit.id" class="item" v-for="(kit,index) in c2.kits" v-if="index<19">
+                                        <img style="border-radius: 5px;" :src="'img/kitSingle_middle/'+kit.firstKitImage.id+'.jpg'" />
+                                        {{ kit.name }}
+                                        <div class="ui green basic  left pointing label">{{ kit.downloadTimes}}</div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div v-show="showUpdateTime">
+                            <div class="rankingList">
+                                <a  @click="toggle2All" class="allList3">综合</a>
+                                <a  @click="toggle2PeopleLove" href="#nowhere" class="listPeople3">人气</a>
+                                <a  class="selected">时间<i class="sort content descending icon"></i></a>
+                            </div>
+                            <div class="listPeopleContent ui attached segment" style="border: none; padding: 0;">
+                                <div class="ui fluid vertical menu sort-contend">
+                                    <a :href="'fore_kit_download?kid=' + kit.id" class="item" v-for="(kit,index) in c3.kits" v-if="index<19">
+                                        <img style="border-radius: 5px;" :src="'img/kitSingle_middle/'+kit.firstKitImage.id+'.jpg'" />
+                                        {{ kit.name }}
+                                        <div class="ui green basic left pointing label">
+                                            {{ kit.downloadTimes}}
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部 -->
+    <footer>
+        <div class="ui inverted vertical segment m-padded-tb-large">
+            <div class="ui center aligned container">
+                <div class="ui divided stackable grid" style="font-size: 12px;">
+                    <p class="ui aligned">本网站提供的视资源部分收集于各大网站，本网站只提供web页面浏览服务，
+                        若本站收集的资源无意侵犯了贵司版权，请给站长邮箱地址来信，我们将会在第一时间将其删除
+                    </p>
+                    <p class="m-text-thin m-text-spaced m-opacity-tiny">
+                        <a href="#" style="color: white;">广告联系</a>
+                    </p>
+                    <p class="m-text-thin m-text-spaced m-opacity-tiny">
+                        <a href="#" style="color: white;">关于本站</a>
+                    </p>
+
+                    <p class="m-text-thin m-text-spaced m-opacity-tiny">
+                        <a href="#" style="color: white;">反馈意见</a>
+                    </p>
+                    <p class="m-text-thin m-text-spaced m-opacity-tiny">
+                        <a href="#" style="color: white;">站外链接</a>
+                    </p>
+                    <p class="m-text-thin m-text-spaced m-opacity-tiny">
+                        Copyright © 2020
+                        <b style="">
+                            <a href="http://www.bhw.com"><font color="orange">www.</font><font color="orange">bhw</font>
+                                <font color="orange">.com</font></a>
+                        </b>
+                        All Rights Reserved
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../../static/js/jquery.min.js" th:src="@{/js/jquery.min.js}"></script>
+    <script src="../../static/js/vue.min.js" th:src="@{/js/vue.min.js}"></script>
+    <script src="../../static/js/axios.min.js" th:src="@{/js/axios.min.js}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+    <script>
+        $(function () {
+            var data1 = {
+                uri: 'forekit',
+                uri1: 'forekitlist',   /* 获取排行榜列表路径*/
+                uri2: 'downloads',
+                uri3: 'foreReview',
+                kit: '',
+                kits: [],
+                pvs: [],
+                reviews: [],   //评论集合
+                content:'',   //评论内容
+                category: null,
+                firstKitImage: null,
+                listKitSort: [],
+                showDetail:true,
+                showReview:false,
+                showPeopleLove: true,
+                showAllList: false,
+                showUpdateTime: false,
+                num: 0,
+                sort: 'downloadTimes',
+                sort2: 'all',
+                sort3: 'updateTime',
+                c: '',    //承接排行榜后台传递过来的分类
+                c2:'',
+                c3:'',
+                address: '',
+                statue: ''
+            };
+            var vue = new Vue({
+               el: '#workArea',
+               data: data1,
+               mounted: function() {
+                    this.get();
+                    this.getListSort();
+                    this.listener();
+                    this.recodeUserUse();
+               },
+               methods:{
+                   collect: function(kid) {
+                      var url = "foreCheckLogin";
+                      axios.get(url).then(function (response) {
+                         if(response.data.code === 0) {   //到这里说明登录成功
+                             var url = "collects/" +kid;
+                             axios.post(url).then(function (response) {
+                                 if(response.data.code === 1) {   //到这里表明用户已经收藏了该工具
+                                     alert(response.data.message);
+                                     vue.statue = "已收藏";
+                                     $("#collectBtn").attr("disabled","true");
+                                 }
+                                 else{
+                                     vue.statue = "已收藏";   //此时后台已经将数据存入数据库中，用户本身已持有该工具，所以需要修改状态
+                                     $("#collectBtn").attr("disabled","true");
+                                 }
+                             });
+                         }
+                         else {
+                             vue.statue = "点击收藏";
+                             alert(response.data.message);
+                         }
+                     });
+                   },
+                   listener: function() {
+                       var kid = getUrlParms("kid");
+                       var url = "foreCheckLogin";
+                       axios.get(url).then(function(response) {   //第一次访问验证用户是否登录
+                           if(0 == response.data.code){   //来到这里表示已经登录成功
+                               //检查当前用户收藏夹里是否有该工具
+                               var url = "collects/" + kid;
+                               axios.get(url).then(function (response) {
+                                   if(response.data.code === 1) {  //到这里表示用户已经收藏了该工具，接下来我们只需要
+                                       vue.statue = "已收藏";      //将statue里的值改为 已收藏
+                                       $('#collectBtn').attr('disabled',"true");  //并设置按钮不可点击
+                                   } else {
+                                       vue.statue = "点击收藏";
+                                   }
+                               });
+                               $(".reviewArea").removeAttr("disabled");  //将评论区可编辑
+                           }
+                           else {
+                               vue.statue = "点击收藏";
+                               alert(response.data.message);
+                           }
+                       });
+                   },
+                   recodeUserUse: function() {
+                       var url = "foreCheckLogin";
+                       axios.get(url).then(function (response) {
+                           if(response.data.code === 0) {   //到这里说明登录成功
+                                var kid = getUrlParms("kid");
+                                var url = "userRecord" + "/" + kid;
+                                axios.post(url).then(function (response) {
+
+                                });
+                           }
+                   },
+                   commitReviewFuc: function() {
+                       var kid = getUrlParms("kid");
+                       var content = this.content;
+                       if(content === "") {
+                           alert("内容为空，请重新评论。");
+                           return;
+                       } else {
+                           var url = this.uri3 + "?kid=" + kid + "&content=" + content;
+                           axios.post(url).then(function () {
+                               var url = "fore_kit_download?kid=" + kid;
+                               window.location.href = url;
+                           });
+                       }
+                   },
+                   get: function() {
+                       var kid = getUrlParms("kid");
+                       var url = this.uri+"/"+ kid;
+                       axios.get(url).then(function(response) {
+                           var result = response.data;
+                           vue.kit = result.data.kit;
+                           vue.pvs = result.data.pvs;
+                           vue.reviews = result.data.reviews;
+                           vue.category = vue.kit.category;
+                           vue.firstKitImage = vue.kit.firstKitImage;
+                       });
+                   },
+                   getListSort: function() {
+                       var kid = getUrlParms("kid");
+                       var url = this.uri1 + "/"+ kid + "?sort=" + this.sort;
+                       axios.get(url).then(function (response) {
+                            vue.c = response.data;
+                       });
+                   },
+                   download: function() {
+                       var kid = getUrlParms("kid");
+                       var url = this.uri2 + "/"+ kid;
+                       axios.get(url).then(function () {
+                            window.location.href = url;
+                       });
+
+                   },
+                   /*切换软件详细信息*/
+                   toggle2Detail:function(){
+                       this.showDetail = true;
+                       this.showReview = false;
+                   },
+                   /*切换软件评论信息*/
+                   toggle2Review:function(){
+                       this.showDetail = false;
+                       this.showReview = true;
+                   },
+                   /*切换综合榜单    评论数 * 下载数*/
+                   toggle2All: function () {
+                        this.showAllList = true;
+                        this.showPeopleLove = false;
+                        this.showUpdateTime = false;
+                        var kid = getUrlParms("kid");
+                        var url = this.uri1 + "/"+ kid + "?sort=" + this.sort2;
+                        axios.get(url).then(function (response) {
+                           vue.c2 = response.data;
+                        });
+                   },
+                   /*切换人气榜单*/
+                   toggle2PeopleLove: function () {
+                       this.showAllList = false;
+                       this.showPeopleLove = true;
+                       this.showUpdateTime = false;
+                   },
+                   /*切换时间榜单*/
+                   toggle2UpdateTime: function () {
+                       this.showAllList = false;
+                       this.showPeopleLove = false;
+                       this.showUpdateTime = true;
+                       var kid = getUrlParms("kid");
+                       var url = this.uri1 + "/"+ kid + "?sort=" + this.sort3;
+                       axios.get(url).then(function (response) {
+                           vue.c3 = response.data;
+                       });
+                   }
+               }
+            });
+            $("a.kitDetailTopReviewLink").click(function(){
+                $("div.kitReviewDiv").show();
+                $("div.kitDetailDiv").hide();
+            });
+            $("a.kitReviewTopPartSelectedLink").click(function(){
+                $("div.kitReviewDiv").hide();
+                $("div.kitDetailDiv").show();
+            });
+
+            //加载全局监听函数
+            otherListeners(vue);
+        });
+
+
+        //监听
+        function otherListeners(vue) {
+            //评论按钮监听
+            $(".commentLink").click(function(){
+                var url = "forecheckLogin";
+                axios.get(url).then(function(response) {   //第一次访问验证用户是否登录
+                    if(0 == response.data.code){   //来到这里表示已经登录成功
+                        $(".reviewArea").removeAttr("disabled");  //将评论区可编辑
+                        var url = "forereview";
+                        var content = vue.content;
+                        if(content != null) {
+                            axios.post(url,content).then(function(response) {  //将评论内容保存到后台
+                                //重新查询评论列表
+                                this.get();
+                            });
+                        }
+                    }
+                    else{
+                        $("#loginModal").modal('show');
+                    }
+                });
+            });
+        }
+
+        //获取地址栏参数的函数
+        function getUrlParms(para){
+            var search=location.search; //页面URL的查询部分字符串
+            var arrPara=new Array(); //参数数组。数组单项为包含参数名和参数值的字符串，如“para=value”
+            var arrVal=new Array(); //参数值数组。用于存储查找到的参数值
+
+            if(search!=""){
+                var index=0;
+                search=search.substr(1); //去除开头的“?”
+                arrPara=search.split("&");
+
+                for(i in arrPara){
+                    var paraPre=para+"="; //参数前缀。即参数名+“=”，如“para=”
+                    if(arrPara[i].indexOf(paraPre)==0&& paraPre.length<arrPara[i].length){
+                        arrVal[index]=decodeURI(arrPara[i].substr(paraPre.length)); //顺带URI解码避免出现乱码
+                        index++;
+                    }
+                }
+            }
+
+            if(arrVal.length==1){
+                return arrVal[0];
+            }else if(arrVal.length==0){
+                return null;
+            }else{
+                return arrVal;
+            }
+        }
+    </script>
+</body>
+</html>

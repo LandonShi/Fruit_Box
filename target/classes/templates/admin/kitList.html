@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta charset="utf-8">
+		<title>工具管理</title>
+		<link rel="stylesheet" type="text/css" href="../../static/css/me.css" th:href="@{/css/me.css}">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.css">
+	</head>
+	<body style="background: #439B78;">
+		<!-- 导航 -->
+		<nav class="ui inverted attached segment m-padded-tb-mini m-shadow-small" style="padding: 0;">
+			<div class="ui inverted secondary  menu">
+				<h4 class="ui teal header item head-title"><i class="cn flag"></i>管理员</h4>
+				<a href="manager" class="item head-a">用户管理</a>
+				<a href="kitCategoryList" class="item head-a">工具管理</a>
+				<div class="right menu">
+					<span style="margin-top: 11px;margin-right: -10px;color: gray;">当前在线的管理员：</span>
+					<a class="item" th:text="${session.manager.name}"></a>
+					<div id="zhuxiao" class="ui item">
+						<a href="logout" style="font-size:11px;" type="button" class="ui orange button inverted">退出</a>
+					</div>
+				</div>
+			</div>
+		</nav>
+
+		<div id="categoryInfo" style="width:100%;height:700px;">
+			<!-- 面包屑导航 -->
+			<div class="ui attached pointing menu">
+				<div class="ui container">
+					<div class="ui breadcrumb left" style="margin-top:13px;">
+						<a href="kitCategoryList" class="section">工具分类</a>
+						<i class="right chevron icon divider"></i>
+						<a :href="'admin_list_kitlist?cid='+category.id">{{category.name}}</a>
+						<i class="right chevron icon divider"></i>
+						<div class="active section">工具管理</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- 工具分类列表 -->
+			<div class="m-container m-padded-tb-big">
+			    <div class="" style="margin: 15px;">
+					<table class="ui compact orange table" style="text-align:center;">
+						<thead>
+							<tr style="height: 45px;">
+								<th>ID</th>
+								<th>图标</th>
+								<th>工具名称</th>
+								<th>简介信息</th>
+								<th>下载次数</th>
+								<th>状态</th>
+								<th>更新时间</th>
+								<th>图片管理</th>
+								<th>设置属性</th>
+								<th>操作</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr v-for="bean in beans ">
+								<td >{{bean.id}}</td>
+								<td >
+									<img v-if="null != bean.firstKitImage" width="40px" :src="'img/kitSingle/'+bean.firstKitImage.id+'.jpg'">
+								</td>
+								<td >{{ bean.name}}</td>
+								<td >{{ bean.description.substr(0,9)}}</td>
+								<td >{{ bean.downloadTimes}}</td>
+								<td >{{ bean.flag}}</td>
+								<td >{{ bean.updateTime}}</td>
+								<td ><a :href="'admin_list_kitimage?kid=' + bean.id"><i class="image icon"></i></a></td>
+								<td ><a :href="'admin_list_kitpropertyvalueedit?kid=' + bean.id"><i class="list layout icon"></i></a></td>
+								<td>
+									<a :href="'admin_edit_kit?id=' + bean.id" class="ui mini teal button"><i class="tasks icon"></i>编辑</a>
+									<a @click="deleteBean(bean.id)" class="ui mini red button" ><i class="remove icon"></i>删除</a>
+								</td>
+							</tr>
+						</tbody>
+						<tfoot>
+							<tr>
+								<th colspan="10" >
+									<!-- 分页 -->
+									<div class="ui pagination menu" >
+										<div class="ui pagination menu" style="border: 0;">
+											<a :class="{ disabled: pagination.first }" class="icon item" href="#nowhere" @click="jump('first')">
+												<i class="angle double left icon"></i>
+											</a>
+											<a :class="{ disabled: !pagination.hasPrevious }" class="icon item">
+												<i class="angle left icon"></i>
+											</a>
+																									
+											<div v-for="i in pagination.navigatepageNums" class="disabled item">
+												<a href="#nowhere" @click="jumpByNumber(i-1)" >{{i}}</a>
+											</div>		  	
+											<a :class="{ disabled: !pagination.hasNext }" class="icon item" href="#nowhere" @click="jump('next')">
+												<i class="angle right icon"></i>
+											</a>
+											<a :class="{ disabled: pagination.last }" class="icon item" href="#nowhere" @click="jump('last')">
+												<i class="angle double right icon"></i>
+											</a>
+										</div>															
+									</div>												
+								</th>
+							</tr>
+						</tfoot>
+					</table>						    		
+			    </div>
+			</div>
+			<!-- 分割线 -->
+			<div class="ui horizontal divider">
+				<a href="#nowhere" class="ui red tag label mini">上传工具</a>
+			</div>
+			<!-- 新增 -->
+			<div class="m-container-small m-padded-tb-tiny">
+			    <div class="ui container">
+					<form class="ui form">
+						<div class="field">
+							<div class="ui left labeled input">
+								<label class="ui teal basic label">隶属分类：</label>
+								<input v-model.trim="bean.category" type="text" name="category" placeholder="不超过10字">
+							</div>
+							<div class="ui left labeled input">
+								<label class="ui teal basic label">工具名称：</label>
+								<input v-model.trim="bean.name" type="text" name="name" placeholder="不超过10字">
+							</div>
+							<div style="margin-top: 10px;"></div>
+							<div class="ui left labeled input">
+								<label class="ui teal basic label">简介信息：</label>
+								<input v-model.trim="bean.description" type="text" name="description" placeholder="不超过50字">
+							</div>
+							<div style="margin-top: 10px;"></div>
+							<div class="ui left labeled input">
+								<label class="ui teal basic label">下载次数：</label>
+								<input v-model.trim="bean.downloadTimes" type="text" name="downloadTimes" placeholder="初始为0">
+							</div>
+							<div style="margin-top: 10px;"></div>
+							<div class="ui left labeled input">
+								<label class="ui teal basic label">工具状态：</label>
+								<input v-model.trim="bean.flag" type="text" name="flag" placeholder="转载或原创">
+							</div>
+							<div style="margin-top: 10px;"></div>
+							<div class="ui left labeled input">
+								<label class="ui teal basic label">更新时间：</label>
+								<input v-model.trim="bean.updateTime" type="date" name="updateTime" placeholder="yyyy-MM-dd格式">
+							</div>
+							<div style="margin-top: 10px;"></div>
+							<div class="ui left labeled input">
+								<label class="ui teal basic label">上传文件：</label>
+								<input  type="file" name="file" @change="getFile($event)" />
+							</div>
+						</div>
+						<div class="ui right aligned container">
+							<button type="button" class="ui teal button mini" onclick="window.history.go(-1)" >
+								<i class="arrow left icon"></i>返回
+							</button>
+							<input type="hidden" name="cid" v-model="bean.category.id">
+							<a href="#nowhere" @click="add" class="ui orange button mini" >
+								<i class="send icon"></i>提交
+							</a>
+						</div>
+			        </form>
+			    </div>
+			</div>
+		</div>
+		<script type="text/javascript" th:src="@{/js/jquery.min.js}" ></script>
+		<script type="text/javascript" th:src="@{/js/vector.js}"></script>
+		<script type="text/javascript" th:src="@{/js/vue.min.js}"></script>
+		<script type="text/javascript" th:src="@{/js/axios.min.js}"></script>
+		<script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>	
+		<script>
+		    $(function(){
+				var cid = getUrlParms("cid");
+		    	var data1Vue =  {
+					uri:'kits',
+					beans: [],
+					bean: { id: 0, name: '',description:'',downloadTimes:'',flag:'',updateTime:'',category:{'id':0}},
+					pagination:{},
+					category:'',
+					file: null
+		    	}; 	
+		    	//vueModel
+		    	var vue = new Vue({
+		    		el: '#categoryInfo',
+		    		data: data1Vue,
+		    		mounted: function() {
+		    			this.list(0);
+						this.getCategory(cid);
+		    		},
+		    		methods: {
+						getCategory: function(cid){
+							var url = "kitcategories/"+cid;
+							axios.get(url).then(function(response) {
+								vue.category = response.data;
+							})
+						},
+						list:function(start){
+							var url =  "kitcategories/"+cid+"/"+this.uri+"?start="+start;
+							axios.get(url).then(function(response) {
+								vue.pagination = response.data;
+								vue.beans = response.data.content;
+							});
+						},
+						add: function () {
+							if(!checkEmpty(this.bean.name, "工具名称"))
+								return;
+							if (!checkEmpty(this.bean.description, "简介信息"))
+								return;
+							if (!checkEmpty(this.bean.downloadTimes, "下载次数"))
+								return;
+							if (!checkEmpty(this.bean.flag, "状态"))
+								return;
+							if (!checkEmpty(this.bean.updateTime, "更新时间"))
+								return;
+							var url = this.uri;
+							this.bean.category.id = cid;
+							var formData = new FormData();
+							formData.append("id", this.bean.id);
+							formData.append("name", this.bean.name);
+							formData.append("description", this.bean.description);
+							formData.append("downloadTimes",this.bean.downloadTimes);
+							formData.append("flag", this.bean.flag);
+							formData.append("updateTime", this.bean.updateTime);
+							formData.append("cid",this.bean.category.id);
+							formData.append("file", this.file);
+							axios.post(url,formData,{headers:{'Content-Type':'multipart/form-data'}}).then(function(){
+								vue.list(0);
+								vue.bean =  {id: 0, name: '',description:'',downloadTimes:'',flag:'',updateTime:'',category:{'id':0}};
+							});
+						},
+						deleteBean: function (id) {
+							if(!checkDeleteLink())
+								return;
+							var url = this.uri+"/"+id;
+							axios.delete(url).then(function(response){
+								if(0!=response.data.length) {
+									alert("用户您好，您当前的操作存在限制，为保证您数据的完整性，请先删除与工具相关联的图片和文件再执行删除操作");
+								}
+								else {
+									vue.list(0);
+								}
+							});
+						},
+						getFile: function (event) {
+							this.file = event.target.files[0];
+						},
+		    			jump: function(page){
+		                    jump(page,vue);
+		                },
+		                jumpByNumber: function(start){
+		                    jumpByNumber(start,vue);
+		                }
+		    		}		  	
+		    	});	
+		    });
+		    
+		    $('.menu.toggle').click(function () {
+			    $('.m-item').toggleClass('m-mobile-hide');
+			});
+			//判断是否为空
+			function checkEmpty(value,text){		
+				if(null==value || value.length==0){
+					alert(text+ "不能为空");
+					return false;
+				}
+				return true;
+			}
+			//获取地址栏参数的函数
+			function getUrlParms(para){
+				var search=location.search; //页面URL的查询部分字符串
+				var arrPara=new Array(); //参数数组。数组单项为包含参数名和参数值的字符串，如“para=value”
+				var arrVal=new Array(); //参数值数组。用于存储查找到的参数值
+
+				if(search!=""){
+					var index=0;
+					search=search.substr(1); //去除开头的“?”
+					arrPara=search.split("&");
+
+					for(i in arrPara){
+						var paraPre=para+"="; //参数前缀。即参数名+“=”，如“para=”
+						if(arrPara[i].indexOf(paraPre)==0&& paraPre.length<arrPara[i].length){
+							arrVal[index]=decodeURI(arrPara[i].substr(paraPre.length)); //顺带URI解码避免出现乱码
+							index++;
+						}
+					}
+				}
+
+				if(arrVal.length==1){
+					return arrVal[0];
+				}else if(arrVal.length==0){
+					return null;
+				}else{
+					return arrVal;
+				}
+			}
+		  	//确实是否要删除
+			function checkDeleteLink(){
+				var confirmDelete = confirm("确认要删除？");
+				if(confirmDelete)
+					return true;
+				return false;		
+			}
+		    //跳转函数
+		    function jump(page,vue){
+				if('first'== page && !vue.pagination.first)
+					vue.list(0);
+				
+				else if('pre'== page &&	vue.pagination.hasPrevious )
+					vue.list(vue.pagination.number-1);
+				
+				else if('next'== page && vue.pagination.hasNext)
+					vue.list(vue.pagination.number+1);					
+				
+				else if('last'== page && !vue.pagination.last)
+					vue.list(vue.pagination.totalPages-1);    	
+		    }
+		    //跳转函数
+		    function jumpByNumber(start,vue){
+		    	if(start!=vue.pagination.number)
+					vue.list(start);       	
+		    }
+		</script>
+	</body>
+</html>

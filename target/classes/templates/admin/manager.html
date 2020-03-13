@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8" />
+    <title>用户管理</title>
+    <link rel="stylesheet" type="text/css" href="../../static/css/style.css" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <style>
+        body{
+            margin: 0;
+            width: 100%;
+            color: #fff;
+            background: linear-gradient(-45deg, #ee7752, lightskyblue, darkorange, #23d5ab);
+            background-size: 400% 400%;animation: gradientBG 15s ease infinite;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 导航 -->
+    <div id="workArea">
+        <nav class="ui inverted attached segment m-padded-tb-mini m-shadow-small" style="padding: 0;">
+            <div class="ui inverted secondary  menu">
+                <h4 class="ui teal header item head-title"><i class="cn flag"></i>管理员</h4>
+                <a href="manager" class="item head-a">用户管理</a>
+                <a href="managerKitCategoryList" class="item head-a">工具管理</a>
+                <div class="right menu">
+                    <a class="item" th:text="${session.manager.name}"></a>
+                    <div id="zhuxiao" class="ui item">
+                        <a href="logout" style="font-size:11px;" type="button" class="ui orange button inverted">退出</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- 用户管理-->
+        <div class="m-padded-tb-big m-container" style="margin-top: 35px;">
+            <div class="ui container">
+                <a class="ui red tag mini label">用户管理</a>
+                <div style="height: 15px;"></div>
+                <div class="ui stackable grid">
+                    <!-- 选项链接 -->
+                    <div class="four wide column">
+                        <div class="ui top attached segment" style="height:100%;">
+                            <div class="ui selection list list-item">
+                                <div class="item item-nav" style="margin-bottom: 12px;margin-top: 15px;">
+                                    <i class="world icon large orange"></i>
+                                    <div class="content">
+                                        <div style="margin-top: 5px; color: gray; font-size: 14px;">
+                                            <a @click="showAllModel"  href="#">全局模型</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item item-nav" style="margin-bottom: 12px;margin-top: 15px;">
+                                    <i class="user icon large teal"></i>
+                                    <div class="content">
+                                        <div style="margin-top: 5px; color: gray; font-size: 14px;">
+                                            <a @click="showUserList" href="#">用户列表</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item item-nav" style="margin-bottom: 12px;margin-top: 15px;">
+                                    <i class="user icon large teal"></i>
+                                    <div class="content">
+                                        <div style="margin-top: 5px; color: gray; font-size: 14px;">
+                                            <a @click="showManagerList()" href="#">管理员列表</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item item-nav" style="margin-bottom: 12px;margin-top: 15px;">
+                                    <i class="user icon large teal"></i>
+                                    <div class="content">
+                                        <div style="margin-top: 5px; color: gray; font-size: 14px;">
+                                            <a @click="showAddManagerOne" href="#">新增管理员</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 全局模型 -->
+                    <div class="twelve wide column"  v-show="showAll">
+                        <div class="ui top attached segment" style=" border: solid 1px white;">
+                            <a class="ui orange tag mini label">全局模型</a>
+                            $nbsp;
+                            <div class="ui breadcrumb">
+                                <a class="section">用户管理</a>
+                                <div class="divider"> / </div>
+                                <a class="active section">全局模型</a>
+                            </div>
+                        </div>
+                        <div class="ui top attached segment" style="border: solid 1px white;">
+
+                        </div>
+                    </div>
+                    <!-- 用户列表信息 -->
+                    <div class="twelve wide column"  v-show="showUser">
+                        <div class="ui top attached segment" style="border-radius: 14px; border: solid 1px white;">
+                            <a class="ui red tag mini label">用户列表</a>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <a @click="upSort(0)"  href="#"><i class="sort numeric ascending icon"></i>升序</a>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <a @click="downloadSort(0)" href="#"><i class="sort numeric descending icon"></i>降序</a>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <div class="ui action input mini" style="width: 35%;">
+                                <input type="text" placeholder="请输入用户名" v-model="keyword" />
+                                <a :href="'user_search?keyword='+ keyword " class="ui icon button">
+                                    <i class="search icon"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ui top attached segment" style="border-radius: 14px; border: solid 1px white;">
+                            <table class="ui basic table" style="border: none;">
+                                <thead>
+                                    <tr>
+                                        <th style="color: orange; width: 15%;">用户ID</th>
+                                        <th style="color: orange; width: 25%;">账号名</th>
+                                        <th style="color: orange; width: 20%;">昵称</th>
+                                        <th style="color: orange; width: 25%;">邮箱</th>
+                                        <th style="color: orange; width: 15%;">操作（谨慎）</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="bean in beans">
+                                        <td>{{bean.id}}</td>
+                                        <td>{{bean.username}}</td>
+                                        <td>{{bean.nickname}}</td>
+                                        <td>{{bean.email}}</td>
+                                        <td>
+                                            <a @click="deleteBean(bean.id)" href="#"><i class="delete icon red"></i>删除</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                <tr>
+                                    <th colspan="10" style="text-align: center;">
+                                        <!-- 分页 -->
+                                        <div class="ui pagination menu">
+                                            <div class="ui pagination menu" style="border: 0;">
+                                                <a :class="{ disabled: pagination.first }" class="icon item" href="#nowhere" @click="jump('first')">
+                                                    <i class="angle double left icon"></i>
+                                                </a>
+                                                <a :class="{ disabled: !pagination.hasPrevious }" class="icon item">
+                                                    <i class="angle left icon"></i>
+                                                </a>
+
+                                                <div v-for="i in pagination.navigatepageNums" class="disabled item">
+                                                    <a href="#nowhere" @click="jumpByNumber(i-1)" >{{i}}</a>
+                                                </div>
+                                                <a :class="{ disabled: !pagination.hasNext }" class="icon item" href="#nowhere" @click="jump('next')">
+                                                    <i class="angle right icon"></i>
+                                                </a>
+                                                <a :class="{ disabled: pagination.last }" class="icon item" href="#nowhere" @click="jump('last')">
+                                                    <i class="angle double right icon"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </th>
+                                </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- 管理员信息-->
+                    <div class="twelve wide column"  v-show="showManager">
+                        <div class="ui top attached segment" style="border-radius: 14px; border: solid 1px white;">
+                            <a class="ui red tag mini label">管理员列表</a>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <a @click="managerUpSort(0)"  href="#"><i class="sort numeric ascending icon"></i>升序</a>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <a @click="managerDownloadSort(0)" href="#"><i class="sort numeric descending icon"></i>降序</a>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <div class="ui action input mini" style="width: 35%;">
+                                <input type="text" placeholder="请输入用户名" v-model="keyword" />
+                                <a :href="'manager_search?keyword='+ keyword " class="ui icon button">
+                                    <i class="search icon"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ui top attached segment" style="border-radius: 14px; border: solid 1px white;text-align: center;">
+                            <table class="ui basic table" style="border: none;">
+                                <thead>
+                                <tr>
+                                    <th style="color: orange; width: 15%;">管理员ID</th>
+                                    <th style="color: orange; width: 25%;">账号</th>
+                                    <th style="color: orange; width: 25%;">密码</th>
+                                    <th style="color: orange; width: 25%;">操作</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="manager in managers">
+                                        <td>{{manager.id}}</td>
+                                        <td>{{manager.name}}</td>
+                                        <td>{{manager.password}}</td>
+                                        <td>
+                                            <a href="#"><i class="ban icon red"></i><i class="delete icon red"></i>删除</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                <tr>
+                                    <th colspan="10" style="text-align: center;">
+                                        <!-- 分页 -->
+                                        <div class="ui pagination menu" >
+                                            <div class="ui pagination menu" style="border: 0; text-align: center; margin: 0 auto;">
+                                                <a :class="{ disabled: pagination.first }" class="icon item" href="#nowhere" @click="jump('first')">
+                                                    <i class="angle double left icon"></i>
+                                                </a>
+                                                <a :class="{ disabled: !pagination.hasPrevious }" class="icon item">
+                                                    <i class="angle left icon"></i>
+                                                </a>
+
+                                                <div v-for="i in pagination.navigatepageNums" class="disabled item">
+                                                    <a href="#nowhere" @click="jumpByNumber(i-1)" >{{i}}</a>
+                                                </div>
+                                                <a :class="{ disabled: !pagination.hasNext }" class="icon item" href="#nowhere" @click="jump('next')">
+                                                    <i class="angle right icon"></i>
+                                                </a>
+                                                <a :class="{ disabled: pagination.last }" class="icon item" href="#nowhere" @click="jump('last')">
+                                                    <i class="angle double right icon"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </th>
+                                </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- 增加管理员-->
+                    <div class="twelve wide column"  v-show="showAddManager">
+                        <div class="ui top attached segment" style="border-radius: 14px; border: solid 1px white;">
+                            <a class="ui red tag mini label">新增管理员</a>
+                        </div>
+                        <div class="ui top attached segment" style="border-radius: 14px; border: solid 1px white;">
+                            <div class="ui error form">
+                                <div class="registerErrorMessageDiv m-shadow-small">
+                                    <div class="ui error message">
+                                        <i class="close icon"></i>
+                                        <div class="header">请注意</div>
+                                        <span class="errorMessage">管理员的权限只能由超级管理员进行编辑</span>
+                                    </div>
+                                </div>
+                                <div style="height: 10px;"></div>
+                                <div class="two fields">
+                                    <div class="field">
+                                        <label>账号</label>
+                                        <input placeholder="账号" type="text" v-model="manager.name">
+                                    </div>
+                                    <div class="field">
+                                        <label>密码</label>
+                                        <input placeholder="密码" type="text" v-model="manager.password">
+                                    </div>
+                                </div>
+                                <div class="ui submit button mini teal">
+                                    <a style="color: white;" @click="addManager">提交</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="../../static/js/jquery.min.js" th:src="@{/js/jquery.min.js}"></script>
+    <script type="text/javascript" src="../../static/js/vector.js" th:src="@{/js/vector.js}"></script>
+    <script type="text/javascript" src="/js/vue.min.js" th:src="@{/js/vue.min.js}"></script>
+    <script type="text/javascript" src="/js/axios.min.js" th:src="@{/js/axios.min.js}"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            var data1 = {
+                uri: 'users',
+                uri1: 'managers',
+                beans:[],
+                managers:[],
+                pagination:{},
+                showAll: true,
+                showUser: false,
+                showManager: false,
+                showAddManager: false,
+                keyword: '',
+                flag: '',
+                stack: [],
+                stack2:[],
+                manager:{name:'', password:''}
+            };
+
+            var vue = new Vue({
+               el: '#workArea',
+               data: data1,
+               mounted: function () {
+                    this.list(0);
+               },
+               methods:{
+                   list: function (start) {
+                        this.flag = "1";  //1表示降序
+                        var url =  this.uri + "?start="+ start + "&flag=" + this.flag;
+                        axios.get(url).then(function (response) {
+                            vue.beans = response.data.content;
+                            vue.pagination = response.data;
+                            this.flag = "";
+                        });
+                   },
+                   addManager: function() {
+                       var url = "managers";
+                       if(0 == this.manager.name.length){
+                           $("span.errorMessage").html("请输入用户名");
+                           $("div.registerErrorMessageDiv").css("visibility","visible");
+                           return;
+                       }
+                       if(0 == this.manager.password.length){
+                           $("span.errorMessage").html("请输入密码");
+                           $("div.registerErrorMessageDiv").css("visibility","visible");
+                           return;
+                       }
+
+                       axios.post(url,this.manager).then(function (response) {
+                            if(response.data.code == 0) {
+                                alert("操作成功");
+                            }
+                            else {
+                                alert("操作失败");
+                            }
+                       });
+                   },
+                   managerUpSort: function(start) {
+                        this.flag = "0";  //0 表示升序
+                        var url =  this.uri1 + "?start=" + start + "&flag=" + this.flag;
+                        axios.get(url).then(function (response) {
+                            //不知道为什么 但这里必须要加一个数组才能完成升序
+                            vue.stack = response.data.content;
+                            vue.managers = vue.stack;
+                            vue.pagination = response.data;
+                            this.flag = "";
+                        });
+                   },
+                   managerDownloadSort: function(start) {
+                       this.flag = "1";  //1表示降序
+                       var url =  this.uri1 + "?start=" + start + "&flag=" + this.flag;
+                       axios.get(url).then(function (response) {
+                           //不知道为什么 但这里必须要加一个数组才能完成升序
+                           vue.stack2 = response.data.content;
+                           vue.managers = vue.stack2;
+                           vue.pagination = response.data;
+                           this.flag = "";
+                       });
+                   },
+                   upSort: function(start) {
+                       this.flag = "0";  //0表示升序
+                       var url =  this.uri + "?start=" + start + "&flag=" + this.flag;
+                       axios.get(url).then(function (response) {
+                           vue.beans = response.data.content;
+                           vue.pagination = response.data;
+                           this.flag = "";
+                       });
+                   },
+                   downloadSort: function(start) {
+                       this.flag = "1";  //1表示降序
+                       var url =  this.uri + "?start=" + start + "&flag=" + this.flag;
+                       axios.get(url).then(function (response) {
+                           vue.beans = response.data.content;
+                           vue.pagination = response.data;
+                           this.flag = "";
+                       });
+                   },
+                   // 管理员查询
+                   getManagerListFuc: function(start) {
+                       this.flag = "1";  //1表示降序
+                       var url =  this.uri1 + "?start="+ start + "&flag=" + this.flag;
+                       axios.get(url).then(function (response) {
+                           vue.managers = response.data.content;
+                           vue.pagination = response.data;
+                           this.flag = "";
+                       });
+                   },
+                   deleteBean: function(id) {
+                       if(!checkDeleteLink())
+                           return;
+                       var url = this.uri + "/" + id;
+                       axios.delete(url).then(function (response) {
+                           if(0!=response.data.length){
+                               alert(response.data);
+                           }
+                           else{
+                               vue.list(0);
+                           }
+                       });
+                   },
+                   jump: function(page){
+                       jump(page,vue);
+                   },
+                   jumpByNumber: function(start){
+                       jumpByNumber(start,vue);
+                   },
+                   showAllModel: function() {
+                       this.showAll = true;
+                       this.showUser = false;
+                       this.showManager = false;
+                       this.showAddManager = false;
+                   },
+                   showUserList: function () {
+                        this.showAll = false;
+                        this.showUser = true;
+                        this.showManager = false;
+                        this.showAddManager = false;
+                        this.list(0);
+                   },
+                   showManagerList: function () {
+                       this.showAll = false;
+                       this.showUser = false;
+                       this.showManager = true;
+                       this.showAddManager = false;
+                       this.getManagerListFuc(0);
+                   },
+                   showAddManagerOne: function () {
+                       this.showAll = false;
+                       this.showUser = false;
+                       this.showManager = false;
+                       this.showAddManager = true;
+                   }
+               }
+            });
+
+        });
+
+        //消息提示关闭初始化
+        $('.message .close').on('click', function () {
+            $(this).closest('.message').transition('fade');
+        });
+        //确实是否要删除
+        function checkDeleteLink(){
+            var confirmDelete = confirm("确认要删除？");
+            if(confirmDelete)
+                return true;
+            return false;
+        }
+        //跳转函数
+        function jump(page,vue){
+            if('first'== page && !vue.pagination.first)
+                vue.list(0);
+
+            else if('pre'== page &&	vue.pagination.hasPrevious )
+                vue.list(vue.pagination.number-1);
+
+            else if('next'== page && vue.pagination.hasNext)
+                vue.list(vue.pagination.number+1);
+
+            else if('last'== page && !vue.pagination.last)
+                vue.list(vue.pagination.totalPages-1);
+        }
+        //跳转函数
+        function jumpByNumber(start,vue){
+            if(start!=vue.pagination.number)
+                vue.list(start);
+        }
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>果函网--搜索结果</title>
+    <link rel="stylesheet" type="text/css" href="../../static/css/me.css" th:href="@{/css/me.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.css">
+    <style>
+        body{
+            margin: 0;
+            width: 100%;
+            color: #fff;
+            background: linear-gradient(-45deg, #ee7752, lightskyblue, antiquewhite, #23d5ab);
+            background-size: 400% 400%;animation: gradientBG 15s ease infinite;
+        }
+    </style>
+</head>
+<body>
+    <div id="workArea">
+        <!-- 导航 -->
+        <nav class="ui attached segment m-shadow-small" style="padding: 0;">
+            <div class="nav-top">
+                <div class="ui secondary stackable menu">
+                    <h4 class="ui teal header item head-title"><i class="cn flag"></i>呆果果的宝函</h4>
+                    <a href="#" class="item head-a">首页</a>
+                    <a href="#" class="item head-a">视频</a>
+                    <a href="kit" class="item head-a">工具</a>
+                    <a href="#" class="item head-a">技术摘要</a>
+                    <a href="#" class="item head-a">关于本站</a>
+                    <div class="item right"></div>
+                    <a th:if="${null==session.user}" href="foreLogin" class="item head-a">登录</a>
+                    <a th:if="${null==session.user}" href="register" class="item head-a">注册</a>
+                    <a th:if="${null!=session.user}" href="personalHomepage" th:text="${session.user.nickname}" class="item head-a"></a>
+                    <a th:if="${null!=session.user}" href="foreLogout" class="item head-a">退出</a>
+                </div>
+            </div>
+        </nav>
+
+        <div style="height: 20px;"></div>
+        <div class="m-container m-padded-tb-big">
+            <div class="ui container" style="width: 100%;">
+                <a class="ui red tag label mini">查询结果</a>
+
+                <div style="height: 10px;"></div>
+                <div class="ui bottom attached segment">
+                    <div class="ui sixteen column grid">
+                        <div class="four wide column" v-for="kit in kits">
+                            <div class="ui special cards">
+                                <div class="card m-shadow-small kit-card">
+                                    <div class="dimmable image">
+                                        <img :src="'img/kitSingle/'+kit.firstKitImage.id+'.jpg'" />
+                                    </div>
+                                    <div class="content">
+                                        <a :href="'fore_kit_download?kid=' + kit.id" class="ui header">{{ kit.name}}</a>
+                                        <div class="meta">
+                                            <p>{{ kit.description.substr(0,30)}}</p>
+                                            <span title="下载量"><i class="download icon" style="color: blueviolet;"></i>{{ kit.downloadTimes}}</span>
+                                            <span title="上架时间"><i class="moon icon" style="color: navajowhite"></i>{{ kit.updateTime.substr(0,10)}}</span><br/>
+                                            <span title="评论数"><i class="comments icon" style="color: pink"></i>&nbsp;{{kit.reviewCount}}</span>
+                                            &nbsp;&nbsp;&nbsp;
+                                            <span><i class="sun icon" style="color: orange;"></i>
+                                                <a @click="collect(kit.id)" href="#" style="color: lightgray;" v-model="statue">{{statue}}</a>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="extra content">
+                                        <a :href="'fore_kit_download?kid=' + kit.id"><i class="users icon"></i>在线使用或下载</a>
+                                    </div>
+                                    <div class="ui bottom right attached label orange">
+                                        <font style="vertical-align: inherit;">
+                                            <font style="vertical-align: inherit;">{{kit.flag}}</font>
+                                        </font>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-if="0 == kits.length" class="ui sixteen column grid" >
+                        <div class="eight wide column" style="text-align: center; height: 300px;margin: 100px auto;">
+                            <h1 style="color: black; font-size: 20px;">抱歉，没有找到符合条件的工具</h1>
+                            <span style="color: black; font-size: 14px;">您可以将需要的工具来信告诉我们，我们将在7个工作日内为您反馈结果</span>
+                            <div class="ui inverted divider"></div>
+                            <div class="ui right pointing label">592318425@qq.com</div>
+                            <div class="ui inverted green button mini">联系我</div>
+                            <div class="ui left pointing label">17730075906@163.com</div>
+                            <div class="ui move reveal" style="margin: 15px auto; width: 130px;">
+                                <img class="hidden content" :src="'img/other/cry.jpg'" style="width: 130px; border-radius: 15px">
+                                <img class="visible content" :src="'img/other/unkown.gif'" style="width: 130px; height: 100px;">
+                            </div>
+                            <div class="ui bottom attached label">
+                                欢迎收藏本站，现在关注公众号更有惊喜，福利不定期更新
+                                <a class="ui button basic green mini publicImage">点击获取链接</a>
+                                <div id="publicImageView" class="ui flowing popup transition hidden" style="width: 130px !important;">
+                                    <img  :src="'img/qrCode/weixinoffice.png'" class="ui rounded image" style="width: 110px;"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="ui orange button mini right" onclick="window.history.go(-1)" >
+                    <i class="arrow left icon"></i>返回
+                </button>
+            </div>
+        </div>
+
+        <!-- 底部 -->
+        <footer>
+            <div class="ui inverted vertical segment m-padded-tb-large">
+                <div class="ui center aligned container">
+                    <div class="ui divided stackable grid" style="font-size: 12px;">
+                        <p class="ui aligned">本网站提供的视资源部分收集于各大网站，本网站只提供web页面浏览服务，
+                            若本站收集的资源无意侵犯了贵司版权，请给站长邮箱地址来信，我们将会在第一时间将其删除
+                        </p>
+                        <p class="m-text-thin m-text-spaced m-opacity-tiny">
+                            <a href="#" style="color: white;">广告联系</a>
+                        </p>
+                        <p class="m-text-thin m-text-spaced m-opacity-tiny">
+                            <a href="#" style="color: white;">关于本站</a>
+                        </p>
+
+                        <p class="m-text-thin m-text-spaced m-opacity-tiny">
+                            <a href="#" style="color: white;">反馈意见</a>
+                        </p>
+                        <p class="m-text-thin m-text-spaced m-opacity-tiny">
+                            <a href="#" style="color: white;">站外链接</a>
+                        </p>
+                        <p class="m-text-thin m-text-spaced m-opacity-tiny">
+                            Copyright © 2020
+                            <b style="">
+                                <a href="http://www.bhw.com"><font color="orange">www.</font><font color="orange">bhw</font>
+                                    <font color="orange">.com</font></a>
+                            </b>
+                            All Rights Reserved
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <script src="../../static/js/jquery.min.js" th:src="@{/js/jquery.min.js}"></script>
+    <script src="../../static/js/vue.min.js" th:src="@{/js/vue.min.js}"></script>
+    <script src="../../static/js/axios.min.js" th:src="@{/js/axios.min.js}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            var keyword = getUrlParms("keyword");
+            var data1 = {
+                uri: 'forekitsearch',
+                kits: [],
+                kit:'',
+                statue: '点击收藏'
+            };
+            var vue = new Vue({
+                el: '#workArea',
+                data: data1,
+                mounted:function(){
+                    this.load();
+                },
+                methods:{
+                    collect: function(kid) {
+                        //检查用户是否登录
+                        var url = "foreCheckLogin";
+                        axios.get(url).then(function (response) {
+                            //如果登录了
+                            if(response.data === 0) {
+                                var url = this.uri3 +"/kid=" + kid;
+                                axios.post(url).then(function (response) {
+                                    var result = response.data;
+                                    if(result.code==0){
+                                        vue.statue = "已收藏";
+                                    }
+                                });
+                            } else {
+                                alert(JSON.stringify(response.data.message));
+                            }
+                        });
+                    },
+                    load: function() {
+                        var url = this.uri + "?keyword=" + keyword;
+                        axios.post(url).then(function(response){
+                            vue.kits = response.data;
+                        });
+                    }
+                }
+
+            });
+
+            $('.publicImage').popup({
+                popup: $('#publicImageView'),
+                position: 'right center'
+            });
+        });
+        //悬浮二维码
+        function footerAuto() {
+            var _wh = $(window).height();
+            var _dh = $(document).height();
+            var _bh = $(document.body).height();
+            if (_bh < _wh) {
+                $(".footer").css({
+                    position: "fixed",
+                    bottom: "0",
+                    left: "0",
+                })
+            } else {
+                $(".footer").css({
+                    position: "static",
+                    bottom: "auto",
+                    left: "auto",
+                })
+            }
+        }
+
+        //获取地址栏参数的函数
+        function getUrlParms(para){
+            var search=location.search; //页面URL的查询部分字符串
+            var arrPara=new Array(); //参数数组。数组单项为包含参数名和参数值的字符串，如“para=value”
+            var arrVal=new Array(); //参数值数组。用于存储查找到的参数值
+
+            if(search!=""){
+                var index=0;
+                search=search.substr(1); //去除开头的“?”
+                arrPara=search.split("&");
+
+                for(i in arrPara){
+                    var paraPre=para+"="; //参数前缀。即参数名+“=”，如“para=”
+                    if(arrPara[i].indexOf(paraPre)==0&& paraPre.length<arrPara[i].length){
+                        arrVal[index]=decodeURI(arrPara[i].substr(paraPre.length)); //顺带URI解码避免出现乱码
+                        index++;
+                    }
+                }
+            }
+            if(arrVal.length==1){
+                return arrVal[0];
+            }else if(arrVal.length==0){
+                return null;
+            }else{
+                return arrVal;
+            }
+        }
+        //判断是否为空
+        function checkEmpty(value,text){
+            if(null==value || value.length==0){
+                alert(text+ "不能为空");
+                return false;
+            }
+            return true;
+        }
+    </script>
+</body>
+</html>

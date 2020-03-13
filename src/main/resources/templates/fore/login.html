@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>果函网——用户登录</title>
+    <link rel="stylesheet" type="text/css" href="../../static/css/forelogin.css" th:href="@{/css/forelogin.css}">
+    <link rel="stylesheet" type="text/css" href="../../static/css/me.css" th:href="@{/css/me.css}">
+    <link rel="stylesheet" type="text/css" href="../../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" type="text/css" href="../../static/css/font-awesome.min.css" th:href="@{/css/font-awesome.min.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.css">
+    <style>
+        body {
+            background-color: #f98033;
+        }
+        .soda {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            perspective: 50vw;
+            transform: translateZ(-99999px);
+            transform-style: preserve-3d;
+        }
+
+        .bubble {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.3) 60%, rgba(255, 255, 255, 1) 80%);
+            transform: translateX(-50%);
+            will-change: top, left;
+        }
+
+        .bubble::after {
+            content: '';
+            position: absolute;
+            top: 20%;
+            right: 25%;
+            width: 33%;
+            height: 33%;
+            border: 3px solid;
+            border-color: rgba(255, 255, 255, 0.8) transparent transparent transparent;
+            border-radius: 50%;
+            transform: rotate(45deg);
+        }
+    </style>
+</head>
+<body>
+        <div class="soda"></div>
+        <div id="workArea" class="demo form-bg">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-offset-3 col-md-6" style="margin-top: 100px;">
+                        <form class="form-horizontal">
+                            <span class="heading">
+                                <img :src="'img/other/orange.jpg'" style="width: 65px;" >
+                                用户登录
+                                <img :src="'img/other/orange5.jpg'" style="width: 65px;" >
+                            </span>
+                            <div class="form-group">
+                                <input v-model="user.username" id="username" type="username" class="form-control"  placeholder="果果账号 / 手机号 / 电子邮件">
+                                <i class="fa fa-user"></i>
+                            </div>
+                            <div class="form-group help">
+                                <input v-model="user.password" id="password" type="password" class="form-control" placeholder="密码">
+                                <i class="fa fa-lock"></i>
+                                <a href="#" class="fa fa-question-circle" title="忘记密码？"></a>
+                            </div>
+                            <div class="form-group">
+                                <div class="main-checkbox">
+                                    <input type="checkbox"  value="None" id="checkbox1" name="check"/>
+                                    <label for="checkbox1"></label>
+                                </div>
+                                <span class="text">记住我</span>
+                                <button @click="login" type="button" id="loginBtn" class="btn btn-default">登录</button>
+                            </div>
+                            <div>
+                                <div class="ui header" style="color: darkgray;letter-spacing: 2px;">
+                                    快捷登录
+                                    <a class="ui button mini basic orange" onclick="window.history.go(-1)">返回</a>
+                                </div>
+                                <div class="ui mini images">
+                                   <a href="#" style="padding: 8px;" title="还没做哈哈，先留着">
+                                       <img :src="'img/other/QQ.png'" class="ui avatar image circular" >
+                                   </a>
+                                    <a href="#" style="padding: 8px;" title="还没做哈哈，先留着">
+                                        <img :src="'img/other/weichat.png'" class="ui avatar image circular" >
+                                    </a>
+                                    <a href="#" style="padding: 8px;" title="还没做哈哈，先留着">
+                                        <img :src="'img/other/weibo.png'" class="ui avatar image circular" >
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="ui message loginErrorMessageDiv" style="visibility: hidden;">
+                            <span class="errorMessage"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <script src="../../static/js/jquery.min.js" th:src="@{/js/jquery.min.js}"></script>
+    <script src="../../static/js/vue.min.js" th:src="@{/js/vue.min.js}"></script>
+    <script src="../../static/js/axios.min.js" th:src="@{/js/axios.min.js}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+    <script type="text/javascript">
+        $(function() {
+            var data1 = {
+                user: {username: '', password: ''},
+                uri: 'foreLogin',
+                path: 'fore_kit_list'
+            };
+            var vue = new Vue({
+                el: '#workArea',
+                data: data1,
+                methods: {
+                    login: function() {
+                        var url = this.uri;
+                        if(0 == this.user.username.length) {
+                            $("span.errorMessage").html("请输入用户名");
+                            $("div.loginErrorMessageDiv").css("visibility","visible");
+                            return;
+                        }
+                        if(0 == this.user.password.length){
+                            $("span.errorMessage").html("请输入密码");
+                            $("div.loginErrorMessageDiv").css("visibility","visible");
+                            return;
+                        }
+                        axios.post(url,this.user).then(function(response){
+                            var result = response.data;
+                            if(result.code==0){
+                                location.href= vue.path;  //如果后台返回了0，也就是较好校验成功，那么打开该url
+                            }
+                            else{
+                                $("span.errorMessage").html(result.message);
+                                $("div.loginErrorMessageDiv").css("visibility","visible");
+                            }
+                        });
+                    }
+                }
+
+            });
+        });
+
+    </script>
+    <script>
+        const floatOn = options => {
+            var el = options.el,
+                x = options.x,
+                xIsPos = options.xIsPos || Math.floor(Math.random()),
+                updateX = options.updateX || Math.floor(Math.random()),
+                curTop = parseInt(el.style.top),
+                curLeft = parseInt(el.style.left);
+
+            if (curTop > -50) {
+                el.style.top = `${--curTop}px`;
+            } else {
+                el.style.top = `${innerHeight + 50}px`;
+            }
+
+            if (updateX) {
+                if (xIsPos) {
+                    if (curLeft > x + 10) {
+                        xIsPos = false;
+                    } else {
+                        el.style.left = `${curLeft + 1}px`;
+                    }
+                } else {
+                    if (curLeft < x - 10) {
+                        xIsPos = true;
+                    } else {
+                        el.style.left = `${--curLeft}px`;
+                    }
+                }
+            }
+
+            updateX = updateX ? false : true;
+
+            requestAnimationFrame(
+                floatOn.bind(null, { el: el, x: x, xIsPos: xIsPos, updateX: updateX })
+            );
+        };
+
+        class Bubble {
+            constructor(target, i) {
+                this.bubble = document.createElement("div");
+                this.bubble.classList.add("bubble");
+                this.x = Math.floor(Math.random() * innerWidth);
+                this.y = Math.floor(Math.random() * innerHeight);
+                this.scale = Math.random();
+                this.pos = Math.round(Math.random());
+
+                this.bubble.style.top = `${this.y}px`;
+                this.bubble.style.left = `${this.x}px`;
+                this.bubble.style.transform = `translateZ(${
+                    this.pos ? "" : "-"
+                }${this.scale.toFixed(2) * 1000}px)`;
+
+                setTimeout(() => {
+                    target.appendChild(this.bubble);
+            }, i * 50);
+                setTimeout(floatOn.bind(null, { el: this.bubble, x: this.x }), i * 50);
+            }
+        }
+
+        for (let i = 0; i < 100; i++) {
+            new Bubble(document.querySelector(".soda"), i);
+        }
+    </script>
+</body>
+</html>

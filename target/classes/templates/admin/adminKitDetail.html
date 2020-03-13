@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <title>工具管理——未审核</title>
+    <link rel="stylesheet" type="text/css" href="../../static/css/me.css" th:href="@{/css/me.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.css">
+</head>
+<body style="background-color:  #2e9b56;">
+<!-- 导航 -->
+<!-- 导航 -->
+<nav class="ui inverted attached segment m-padded-tb-mini m-shadow-small" style="padding: 0;">
+    <div class="ui inverted secondary  menu">
+        <h4 class="ui teal header item head-title"><i class="cn flag"></i>管理员</h4>
+        <a href="manager" class="item head-a">用户管理</a>
+        <a href="managerKitCategoryList" class="item head-a">工具分类管理</a>
+        <div class="right menu">
+            <a class="item" th:text="${session.manager.name}"></a>
+            <div id="zhuxiao" class="ui item">
+                <a href="logout" style="font-size:11px;" type="button" class="ui orange button inverted">退出</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div id="categoryInfo" style="width:100%;height:700px;">
+    <!-- 工具分类列表 -->
+    <div class="m-container-big m-padded-tb-big">
+        <div style="margin: 15px;">
+            <div class="ui top attached segment">
+                <div class="column">
+                    <div class="ui breadcrumb">
+                        <div class="breadcrumb-a">
+                            <i class="ui home icon blue"></i>所在位置：
+                            <a href="index" class="section" style="color: gray;">管理中心</a>
+                            <div class="divider"> / </div>
+                            <a href="admin_list_kitcategory" class="section" style="color: gray;">{{ bean.category.name}}</a>
+                            <div class="divider"> / </div>
+                            <a href="#" class="section" style="color: gray;">工具管理</a>
+                            <div class="divider"> / </div>
+                            <a href="#" class="section" style="color: gray;">{{bean.name}}</a>
+                            <div class="divider"> / </div>
+                            <div class="active section" style="color: green;">工具详情</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ui top attached segment">
+                <table class="ui unstackable table">
+                    <thead>
+                        <tr>
+                            <th class="center aligned">属性</th>
+                            <th class="center aligned">属性值</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="center aligned">
+                            <td>工具ID</td>
+                            <td style="color: orangered;width: 75%;">{{bean.id}}</td>
+                        </tr>
+                        <tr class="center aligned">
+                            <td>隶属分类</td>
+                            <td style="color: orangered;width: 75%;">{{bean.category.id}}</td>
+                        </tr>
+                        <tr class="center aligned">
+                            <td>用户id</td>
+                            <td style="color: orangered;width: 75%;">{{bean.user.id}}</td>
+                        </tr>
+                        <tr class="center aligned">
+                            <td>作者账号</td>
+                            <td style="color: orangered;width: 75%;">{{bean.user.username}}</td>
+                        </tr>
+                        <tr class="center aligned">
+                            <td>作者昵称</td>
+                            <td style="color: orangered;width: 75%;">{{bean.user.nickname}}</td>
+                        </tr>
+                        <tr class="center aligned">
+                            <td>工具简介</td>
+                            <td style="color: orangered; width: 75%;">{{bean.description}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="ui top attached segment">
+                <table class="ui unstackable table">
+                    <thead>
+                    <tr>
+                        <th class="center aligned">属性</th>
+                        <th class="center aligned">属性值</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="center aligned" v-for="pv in pvs">
+                        <td>{{pv.property.name}}</td>
+                        <td style="color: orangered;width: 75%;" >{{pv.value}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="ui top attached segment">
+                <h3 class="ui centered header">
+                    <a class="ui image label huge">工具图标</a>
+                </h3>
+                <img :src="'img/kitSingle/'+ firstKitImage.id+'.jpg'" class="ui centered image" />
+            </div>
+            <div class="ui top attached segment">
+                <h3 class="ui centered header">
+                    <a class="ui image label huge">工具使用图片</a>
+                </h3>
+                <img class="ui centered image"  v-for="ki in kit.kitDetailImages" :src="'img/kitDetail/'+ki.id+'.jpg'">
+            </div>
+            <div class="ui top attached segment">
+                <div class="ui green button right">
+                    <a @click="kitPass" href="#" style="color: white">审核通过</a>
+                </div>
+                <div class="ui red button">删除</div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}" ></script>
+    <script type="text/javascript" th:src="@{/js/vector.js}"></script>
+    <script type="text/javascript" th:src="@{/js/vue.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/axios.min.js}"></script>
+    <script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>
+    <script>
+        $(function(){
+            var data1Vue =  {
+                uri:'kits',
+                bean: '',
+                pagination:{},
+                category:'',
+                pvs:[],
+                kit: '',
+                firstKitImage: null
+            };
+            //vueModel
+            var vue = new Vue({
+                el: '#categoryInfo',
+                data: data1Vue,
+                mounted: function() {
+                    this.getKit();
+                    this.getPropertyValue();
+                },
+                methods: {
+                    getKit:function(){
+                        var kid = getUrlParms("kid");
+                        var url =  this.uri +"/" + kid;
+                        axios.get(url).then(function(response) {
+                            vue.bean = response.data;
+                        });
+                    },
+                    getPropertyValue: function () {
+                        var kid = getUrlParms("kid");
+                        var url = "adminkit/"+ kid;
+                        axios.get(url).then(function(response) {
+                            var result = response.data;
+                            vue.kit = result.data.kit;
+                            vue.pvs = result.data.pvs;
+                            vue.firstKitImage = vue.kit.firstKitImage;
+                        });
+                    },
+                    kitPass: function () {
+                        var kid = getUrlParms("kid");
+                        var url = "adminkits" + "/" + kid;
+                        axios.put(url).then(function (response) {
+                            if(response.data.code===0) {
+                                alert("审核成功");
+                            } else {
+                                alert("操作失败");
+                            }
+                        });
+                    }
+                }
+            });
+        });
+        //获取地址栏参数的函数
+        function getUrlParms(para){
+            var search=location.search; //页面URL的查询部分字符串
+            var arrPara=new Array(); //参数数组。数组单项为包含参数名和参数值的字符串，如“para=value”
+            var arrVal=new Array(); //参数值数组。用于存储查找到的参数值
+
+            if(search!=""){
+                var index=0;
+                search=search.substr(1); //去除开头的“?”
+                arrPara=search.split("&");
+
+                for(i in arrPara){
+                    var paraPre=para+"="; //参数前缀。即参数名+“=”，如“para=”
+                    if(arrPara[i].indexOf(paraPre)==0&& paraPre.length<arrPara[i].length){
+                        arrVal[index]=decodeURI(arrPara[i].substr(paraPre.length)); //顺带URI解码避免出现乱码
+                        index++;
+                    }
+                }
+            }
+
+            if(arrVal.length==1){
+                return arrVal[0];
+            }else if(arrVal.length==0){
+                return null;
+            }else{
+                return arrVal;
+            }
+        }
+
+    </script>
+</body>
+</html>

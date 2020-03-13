@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>果函网-注册成功</title>
+    <link rel="stylesheet" type="text/css" href="../../static/css/me.css" th:href="@{/css/me.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.css">
+    <style>
+        body{
+            margin: 0;
+            width: 100%;
+            color: #fff;
+            background: linear-gradient(-45deg, #ee7752, lightskyblue, antiquewhite, #23d5ab);
+            background-size: 400% 400%;animation: gradientBG 15s ease infinite;
+        }
+    </style>
+</head>
+<body onload="changeNums">
+    <nav class="ui attached segment m-shadow-small" style="padding: 0;">
+        <div class="nav-top">
+            <div class="ui secondary stackable menu">
+                <h4 class="ui teal header item head-title"><i class="cn flag"></i>呆果果的宝函</h4>
+                <a href="#" class="item head-a">首页</a>
+                <a href="#" class="item head-a">视频</a>
+                <a href="#" class="item head-a">工具</a>
+                <a href="#" class="item head-a">技术摘要</a>
+                <a href="#" class="item head-a">关于本站</a>
+                <div class="item right"></div>
+            </div>
+        </div>
+    </nav>
+
+    <div id="workArea" class="m-container m-padded-tb-big">
+        <div class="ui container">
+            <a class="ui green tag label">注册流程</a>
+            <div style="height: 20px;"></div>
+            <div class="ui fluid form segment m-shadow-small">
+                <div class="ui progress success" data-percent="100" id="example1">
+                    <div class="bar"></div>
+                    <div class="label">
+                        <i class="check circle icon ui big teal"></i>
+                        恭喜，注册成功！</div>
+                </div>
+                <a href="foreLogin" class="ui inverted green button mini m-shadow-small">返回登录</a>
+            </div>
+        </div>
+    </div>
+    <div style="height: 410px;"></div>
+    <!-- 底部 -->
+    <footer>
+        <div class="ui inverted vertical segment m-padded-tb-large">
+            <div class="ui center aligned container">
+                <div class="ui divided stackable grid" style="font-size: 12px;">
+                    <p class="ui aligned">本网站提供的视资源部分收集于各大网站，本网站只提供web页面浏览服务，
+                        若本站收集的资源无意侵犯了贵司版权，请给站长邮箱地址来信，我们将会在第一时间将其删除
+                    </p>
+                    <p class="m-text-thin m-text-spaced m-opacity-tiny">
+                        <a href="#" style="color: white;">广告联系</a>
+                    </p>
+                    <p class="m-text-thin m-text-spaced m-opacity-tiny">
+                        <a href="#" style="color: white;">关于本站</a>
+                    </p>
+
+                    <p class="m-text-thin m-text-spaced m-opacity-tiny">
+                        <a href="#" style="color: white;">反馈意见</a>
+                    </p>
+                    <p class="m-text-thin m-text-spaced m-opacity-tiny">
+                        <a href="#" style="color: white;">站外链接</a>
+                    </p>
+                    <p class="m-text-thin m-text-spaced m-opacity-tiny">
+                        Copyright © 2020
+                        <b style="">
+                            <a href="http://www.bhw.com"><font color="orange">www.</font><font color="orange">bhw</font>
+                                <font color="orange">.com</font></a>
+                        </b>
+                        All Rights Reserved
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../../static/js/jquery.min.js" th:src="@{/js/jquery.min.js}"></script>
+    <script src="../../static/js/vue.min.js" th:src="@{/js/vue.min.js}"></script>
+    <script src="../../static/js/axios.min.js" th:src="@{/js/axios.min.js}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+    <script>
+        window.onload = function () {
+            $('#example1').progress();
+        };
+    </script>
+</body>
+</html>

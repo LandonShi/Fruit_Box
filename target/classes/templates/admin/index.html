@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta charset="utf-8">
+		<title>后台管理</title>
+		<link rel="stylesheet" type="text/css" href="../../static/css/me.css" th:href="@{/css/me.css}">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.css">
+	</head>
+	<body style="background: #439B78;">
+		<!-- 导航 -->
+		<nav class="ui inverted attached segment m-padded-tb-mini m-shadow-small" style="padding: 0;">
+			<div class="ui inverted secondary  menu">
+				<h4 class="ui teal header item head-title"><i class="cn flag"></i>管理员</h4>
+				<a href="manager" class="item head-a">用户管理</a>
+				<a href="managerKitCategoryList" class="item head-a">工具管理</a>
+				<div class="right menu">
+					<a class="item" th:text="${session.manager.name}"></a>
+					<div id="zhuxiao" class="ui item">
+						<a href="logout" style="font-size:11px;" type="button" class="ui orange button inverted">退出</a>
+					</div>
+				</div>
+			</div>
+		</nav>
+		
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+
+		<!--中间内容-->
+		<div  class="m-container-small m-padded-tb-big">
+		    <div class="ui container">
+		    	<div class="ui success large  message">
+		        	<h3>您好，<a href="#" th:text="${session.manager.name}"></a></h3>
+		        	<p>登录成功</p>
+		      	</div>
+		    </div>
+		</div>
+	
+		<script type="text/javascript" src="../../static/js/jquery.min.js" th:src="@{/js/jquery.min.js}"></script>	
+		<script type="text/javascript" src="../../static/js/vue.min.js" th:src="@{/js/vue.min.js}"></script>
+		<script type="text/javascript" src="../../static/js/axios.min.js" th:src="@{/js/axios.min.js}"></script>
+		<script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>
+	</body>
+</html>

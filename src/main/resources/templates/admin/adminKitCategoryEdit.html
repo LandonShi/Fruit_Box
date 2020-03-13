@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta charset="utf-8">
+		<title>分类管理-编辑</title>
+		<link rel="stylesheet" type="text/css" href="../../static/css/me.css" th:href="@{/css/me.css}" />
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.css" />		
+	</head>
+	<body style="background: #439B78;">
+		<!-- 导航 -->
+		<nav class="ui inverted attached segment m-padded-tb-mini m-shadow-small" style="padding: 0;">
+			<div class="ui inverted secondary  menu">
+				<h4 class="ui teal header item head-title"><i class="cn flag"></i>管理员</h4>
+				<a href="manager" class="item head-a">用户管理</a>
+				<a href="managerKitCategoryList" class="item head-a">工具管理</a>
+				<div class="right menu">
+					<a class="item" th:text="${session.manager.name}"></a>
+					<div id="zhuxiao" class="ui item">
+						<a href="logout" style="font-size:11px;" type="button" class="ui orange button inverted">退出</a>
+					</div>
+				</div>
+			</div>
+		</nav>
+
+		<!--中间内容-->
+		<div id="submitInfo"  class="m-container-small m-padded-tb-big">
+		    <div class="ui container">
+
+				<form class="ui form">
+					<div class=" field">
+						<div class="ui left labeled input">
+							<label class="ui teal basic label">新的名称</label>		
+							<input @keyup.enter="update" v-model.trim="bean.name" type="text" />
+						</div>
+						<div class="ui left labeled input">
+							<label class="ui teal basic label">上传图片</label>
+							<input accept="image/*" type="file" name="image" @change="getFile($event)" />
+						</div>
+					</div>					
+					<div class="ui right aligned container">
+						<button type="button" class="ui teal button mini" onclick="window.history.go(-1)" >
+							<i class="arrow left icon"></i>返回
+						</button>
+						<input type="hidden" name="id" v-model.trim="bean.id" />
+						<a href="#nowhere" @click="update" class="ui orange button mini"><i class="send icon"></i>提交</a>
+					</div>
+		      </form>
+		    </div>
+		</div>
+		
+		<script type="text/javascript" src="../../static/js/jquery.min.js" th:src="@{/js/jquery.min.js}"></script>	
+		<script type="text/javascript" src="../../static/js/vue.min.js" th:src="@{/js/vue.min.js}"></script>
+		<script type="text/javascript" src="../../static/js/axios.min.js" th:src="@{/js/axios.min.js}"></script>
+		<script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>
+		<script>		
+			$(function(){
+				var data2 = {
+					uri: 'kitcategories',
+					listURL:'admin_list_kitcategory',
+			        bean: { id: 0, name: ''},
+					file:''
+				};			
+				//vueModel
+				var vue = new Vue({
+					el: '#submitInfo',
+					data: data2,
+					mounted:function(){ //mounted　表示这个 Vue 对象加载成功了
+		                this.get();
+		            },
+					methods:{
+						get: function() {
+							 var id = getUrlParms("id");
+							 var url = this.uri+"/"+id;
+							 axios.get(url).then(function(response) {
+			                 	vue.bean = response.data;
+			                 });
+						},
+						update: function() {
+							if(!checkEmpty(this.bean.name, "分类名称"))
+		                        return;
+		                    var url = this.uri+"/"+this.bean.id;		                   		                   
+		                    var formData = new FormData();
+							formData.append("image", this.file);
+							formData.append("name", this.bean.name);
+		                    axios.put(url, formData).then(function(response){		                    	      		                    	
+		                        location.href = vue.listURL;
+		                    });
+						},
+						getFile: function (event) {
+							this.file = event.target.files[0];
+						}
+					}
+				});
+			});
+			
+			//获取地址栏参数的函数
+		    function getUrlParms(para){
+			    var search=location.search; //页面URL的查询部分字符串
+			    var arrPara=new Array(); //参数数组。数组单项为包含参数名和参数值的字符串，如“para=value”
+			    var arrVal=new Array(); //参数值数组。用于存储查找到的参数值
+			 
+			    if(search!=""){	
+			        var index=0;
+			        search=search.substr(1); //去除开头的“?”
+			        arrPara=search.split("&");
+			 
+			        for(i in arrPara){
+			            var paraPre=para+"="; //参数前缀。即参数名+“=”，如“para=”
+			            if(arrPara[i].indexOf(paraPre)==0&& paraPre.length<arrPara[i].length){
+			                arrVal[index]=decodeURI(arrPara[i].substr(paraPre.length)); //顺带URI解码避免出现乱码
+			                index++;
+			            }
+			        }
+			    }
+			 
+			    if(arrVal.length==1){
+			        return arrVal[0];
+			    }else if(arrVal.length==0){
+			        return null;
+			    }else{
+			        return arrVal;
+			    }
+		    }
+			
+		 	 //判断是否为空
+			function checkEmpty(value,text){				
+				if(null==value || value.length==0){
+					alert(text+ "不能为空");
+					return false;
+				}
+				return true;
+			}
+			
+		</script>
+	</body>
+</html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta charset="utf-8">
+		<title>工具管理</title>
+		<link rel="stylesheet" type="text/css" href="../../static/css/me.css" th:href="@{/css/me.css}">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.css">
+	</head>
+	<body style="background: #439B78;">
+		<!-- 导航 -->
+		<nav class="ui inverted attached segment m-padded-tb-mini m-shadow-small" style="padding: 0;">
+			<div class="ui inverted secondary  menu">
+				<h4 class="ui teal header item head-title"><i class="cn flag"></i>管理员</h4>
+				<a href="manager" class="item head-a">用户管理</a>
+				<a href="kitCategoryList" class="item head-a">工具管理</a>
+				<div class="right menu">
+					<a class="item" th:text="${session.manager.name}"></a>
+					<div id="zhuxiao" class="ui item">
+						<a href="logout" style="font-size:11px;" type="button" class="ui orange button inverted">退出</a>
+					</div>
+				</div>
+			</div>
+		</nav>
+
+		<div id="categoryInfo" style="width:100%;height:700px;">
+			<!-- 工具分类列表 -->
+			<div class="m-padded-tb-big">
+			    <div class="ui container">				
+					<table class="ui compact orange table" style="text-align:center;">
+						<thead>
+							<tr style="height: 45px;">
+								<th style="width: 4%; height: 45px;">ID</th>
+								<th style="width: 38%;height: 45px;">图片</th>
+								<th style="width: 12%;height: 45px;">分类名称</th>
+								<th style="width: 10%;height: 45px;">属性管理</th>
+								<th style="width: 10%;height: 45px;">未审核</th>
+								<th style="width: 10%;height: 45px;">已审核</th>
+								<th style="width: 15%;height: 45px;">操作</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr v-for="bean in beans">
+								<td >{{bean.id}}</td>
+								<td ><img height="40px"  :src="'img/kitcategory/'+bean.id+'.jpg'"></td>
+								<td >{{ bean.name}}</td>
+								<td ><a :href="'admin_list_kitcategoryproperty?cid=' + bean.id "><i class="list layout icon green"></i></a></td>
+								<td ><a :href="'admin_list_kitlistun?cid=' + bean.id "><i class="setting icon large red"></i></a></td>
+								<td ><a :href="'admin_list_kitlist?cid=' + bean.id "><i class="setting icon large green"></i></a></td>
+								<td>
+									<a class="ui mini teal button" :href="'admin_edit_kitcategory?id='+bean.id "><i class="tasks icon"></i>编辑</a>
+									<a class="ui mini red button" @click="deleteBean(bean.id)"><i class="remove icon"></i>删除</a>
+								</td>
+							</tr>
+						</tbody>
+						<tfoot>
+							<tr>
+								<th colspan="10" >
+									<!-- 分页 -->
+									<div class="ui pagination menu" >
+										<div class="ui pagination menu" style="border: 0;">
+											<a :class="{ disabled: pagination.first }" class="icon item" href="#nowhere" @click="jump('first')">
+												<i class="angle double left icon"></i>
+											</a>
+											<a :class="{ disabled: !pagination.hasPrevious }" class="icon item">
+												<i class="angle left icon"></i>
+											</a>
+																									
+											<div v-for="i in pagination.navigatepageNums" class="disabled item">
+												<a href="#nowhere" @click="jumpByNumber(i-1)" >{{i}}</a>
+											</div>		  	
+											<a :class="{ disabled: !pagination.hasNext }" class="icon item" href="#nowhere" @click="jump('next')">
+												<i class="angle right icon"></i>
+											</a>
+											<a :class="{ disabled: pagination.last }" class="icon item" href="#nowhere" @click="jump('last')">
+												<i class="angle double right icon"></i>
+											</a>
+										</div>															
+									</div>												
+								</th>
+							</tr>
+						</tfoot>
+					</table>						    		
+			    </div>
+			</div>
+		</div>
+		<script type="text/javascript" th:src="@{/js/jquery.min.js}" ></script>
+		<script type="text/javascript" th:src="@{/js/vector.js}"></script>
+		<script type="text/javascript" th:src="@{/js/vue.min.js}"></script>
+		<script type="text/javascript" th:src="@{/js/axios.min.js}"></script>
+		<script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>	
+		<script>
+		    $(function(){
+		    	var data1Vue =  {
+					uri:'kitcategories',
+					beans: [],
+					bean: { id: 0, name: ''},
+					pagination:{},
+					file: null
+		    	}; 	
+		    	//vueModel
+		    	var vue = new Vue({
+		    		el: '#categoryInfo',
+		    		data: data1Vue,
+		    		mounted: function() {
+		    			this.list(0);
+		    		},
+		    		methods: {
+		    			list: function(start) {
+		    				var url = this.uri + "?start="+start;
+		    				axios.get(url).then(function(response){
+		    					 vue.pagination = response.data;
+		                         vue.beans = response.data.content;
+		    				});
+		    			},
+		    			deleteBean: function(id) {
+		    				if(!checkDeleteLink())
+		                        return;
+		    				var url = this.uri+"/"+id;
+		    				axios.delete(url).then(function(response){
+		    					if(0 != response.data.length){
+		                            alert(response.data);
+		                        }
+		                        else{
+		                            vue.list(0);
+		                        }
+		    				});
+		    			},	
+		    			add: function() {
+							if(!checkEmpty(this.bean.name, "分类名称"))
+		                        return;
+							if(!checkEmpty(this.file, "分类图片"))
+								return;
+							var formData = new FormData();
+							formData.append("name", this.bean.name);
+							formData.append("image", this.file);
+							var url = this.uri;							
+							axios.post(url,formData).then(function(response){
+								vue.list(0);
+								vue.bean = { id: 0, name: ''};
+								$("#categoryPic").val('');
+								vue.file = null;
+							});
+						},
+						deleteBean: function (id) {
+							if(!checkDeleteLink())
+								return;
+							var url = this.uri+"/"+id;
+							axios.delete(url).then(function(response){
+								if(0!=response.data.length){
+									alert(response.data);
+								}
+								else{
+									vue.list(0);
+								}
+							});
+						},
+						getFile: function (event) {
+							this.file = event.target.files[0];
+						},
+		    			jump: function(page){
+		                    jump(page,vue);
+		                },
+		                jumpByNumber: function(start){
+		                    jumpByNumber(start,vue);
+		                }
+		    		}		  	
+		    	});	
+		    });
+		    
+		    $('.menu.toggle').click(function () {
+			    $('.m-item').toggleClass('m-mobile-hide');
+			});
+			//判断是否为空
+			function checkEmpty(value,text){		
+				if(null==value || value.length==0){
+					alert(text+ "不能为空");
+					return false;
+				}
+				return true;
+			}
+		  	//确实是否要删除
+			function checkDeleteLink(){
+				var confirmDelete = confirm("确认要删除？");
+				if(confirmDelete)
+					return true;
+				return false;		
+			}
+		    //跳转函数
+		    function jump(page,vue){
+				if('first'== page && !vue.pagination.first)
+					vue.list(0);
+				
+				else if('pre'== page &&	vue.pagination.hasPrevious )
+					vue.list(vue.pagination.number-1);
+				
+				else if('next'== page && vue.pagination.hasNext)
+					vue.list(vue.pagination.number+1);					
+				
+				else if('last'== page && !vue.pagination.last)
+					vue.list(vue.pagination.totalPages-1);    	
+		    }
+		    //跳转函数
+		    function jumpByNumber(start,vue){
+		    	if(start!=vue.pagination.number)
+					vue.list(start);       	
+		    }
+		</script>
+	</body>
+</html>

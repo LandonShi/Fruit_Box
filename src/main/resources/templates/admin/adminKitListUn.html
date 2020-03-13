@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <title>工具管理</title>
+    <link rel="stylesheet" type="text/css" href="../../static/css/me.css" th:href="@{/css/me.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.css">
+</head>
+<body style="background-color:  #2e9b56;">
+    <!-- 导航 -->
+    <!-- 导航 -->
+    <nav class="ui inverted attached segment m-padded-tb-mini m-shadow-small" style="padding: 0;">
+        <div class="ui inverted secondary  menu">
+            <h4 class="ui teal header item head-title"><i class="cn flag"></i>管理员</h4>
+            <a href="manager" class="item head-a">用户管理</a>
+            <a href="managerKitCategoryList" class="item head-a">工具分类管理</a>
+            <div class="right menu">
+                <a class="item" th:text="${session.manager.name}"></a>
+                <div id="zhuxiao" class="ui item">
+                    <a href="logout" style="font-size:11px;" type="button" class="ui orange button inverted">退出</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div id="categoryInfo" style="width:100%;height:700px;">
+        <!-- 工具分类列表 -->
+        <div class="m-container-big m-padded-tb-big">
+            <div style="margin: 15px;">
+                <div class="ui top attached segment">
+                    <div class="column">
+                        <div class="ui breadcrumb">
+                            <div class="breadcrumb-a">
+                                <i class="ui home icon blue"></i>所在位置：
+                                <a href="index" class="section" style="color: gray;">管理中心</a>
+                                <div class="divider"> / </div>
+                                <a href="admin_list_kitcategory" class="section" style="color: gray;">{{ category.name}}</a>
+                                <div class="divider"> / </div>
+                                <a href="#" class="section" style="color: gray;">工具管理</a>
+                                <div class="divider"> / </div>
+                                <div class="active section" style="color: orange;">所有用户上传工具列表（未审核）</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div v-if="beans.length != 0">
+                    <table class="ui compact red table" style="text-align:center;">
+                        <thead>
+                        <tr style="height: 45px;">
+                            <th>ID</th>
+                            <th>审核情况</th>
+                            <th>图标</th>
+                            <th>工具名称</th>
+                            <th>隶属用户id</th>
+                            <th>状态</th>
+                            <th>更新时间</th>
+                            <th>详情信息</th>
+                            <th>下载原件</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="bean in beans ">
+                            <td >{{bean.id}}</td>
+                            <td class="iconclass">{{ bean.icon}}</td>
+                            <td >
+                                <img v-if="null != bean.firstKitImage" width="40px" :src="'img/kitSingle/'+bean.firstKitImage.id+'.jpg'">
+                            </td>
+                            <td >{{ bean.name}}</td>
+                            <td >{{ bean.user.id}}</td>
+                            <td >{{ bean.flag}}</td>
+                            <td >{{ bean.updateTime}}</td>
+                            <td >
+                                <a :href="'admin_kit_detail?kid=' + bean.id"><i class="zoom icon"></i></a>
+                            </td>
+                            <td ><a href="#"><i class="cloud download icon"></i></a></td>
+                            <td>
+                                <a @click="deleteBean(bean.id)" class="ui mini red button" ><i class="remove icon"></i>删除</a>
+                            </td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th colspan="16" >
+                                <!-- 分页 -->
+                                <div class="ui pagination menu" >
+                                    <div class="ui pagination menu" style="border: 0;">
+                                        <a :class="{ disabled: pagination.first }" class="icon item" href="#nowhere" @click="jump('first')">
+                                            <i class="angle double left icon"></i>
+                                        </a>
+                                        <a :class="{ disabled: !pagination.hasPrevious }" class="icon item">
+                                            <i class="angle left icon"></i>
+                                        </a>
+
+                                        <div v-for="i in pagination.navigatepageNums" class="disabled item">
+                                            <a href="#nowhere" @click="jumpByNumber(i-1)" >{{i}}</a>
+                                        </div>
+                                        <a :class="{ disabled: !pagination.hasNext }" class="icon item" href="#nowhere" @click="jump('next')">
+                                            <i class="angle right icon"></i>
+                                        </a>
+                                        <a :class="{ disabled: pagination.last }" class="icon item" href="#nowhere" @click="jump('last')">
+                                            <i class="angle double right icon"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </th>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <div v-else class="ui top attached segment" style="color: red;height: 400px;">
+                    <div class="eight wide column" style="text-align: center; height: 300px;">
+                        <h1 style="color: black; font-size: 20px;margin-top: 25px;">抱歉，还没有用户在此分类下上传工具</h1>
+                        <div class="ui inverted divider"></div>
+                        <div class="ui move reveal" style="margin: 15px auto; width: 130px;">
+                            <img class="hidden content" :src="'img/other/cry.jpg'" style="width: 130px; border-radius: 15px">
+                            <img class="visible content" :src="'img/other/unkown.gif'" style="width: 130px; height: 100px;">
+                        </div>
+                        <div class="ui bottom attached label">
+                            欢迎收藏本站，现在关注公众号更有惊喜，福利不定期更新
+                            <a class="ui button basic green mini publicImage">点击获取链接</a>
+                            <div id="publicImageView" class="ui flowing popup transition hidden" style="width: 130px !important;">
+                                <img :src="'img/qrCode/weixinoffice.png'" class="ui rounded image" style="width: 110px;"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}" ></script>
+    <script type="text/javascript" th:src="@{/js/vector.js}"></script>
+    <script type="text/javascript" th:src="@{/js/vue.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/axios.min.js}"></script>
+    <script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>
+    <script>
+        $(function(){
+            var cid = getUrlParms("cid");
+            var data1Vue =  {
+                uri:'kits',
+                beans: [],
+                pagination:{},
+                category:''
+            };
+            //vueModel
+            var vue = new Vue({
+                el: '#categoryInfo',
+                data: data1Vue,
+                mounted: function() {
+                    this.getCategory(cid);
+                    this.list(0);
+                },
+                methods: {
+                    getCategory: function(cid){
+                        var url = "kitcategories/"+cid;
+                        axios.get(url).then(function(response) {
+                            vue.category = response.data;
+                        })
+                    },
+                    list:function(start){
+                        var url =  "adminkitcategories/"+ cid + "/"+ this.uri+"?start="+start + "&icon=未审核";
+                        axios.get(url).then(function(response) {
+                            vue.pagination = response.data;
+                            vue.beans = response.data.content;
+                        });
+                    },
+                    jump: function(page){
+                        jump(page,vue);
+                    },
+                    jumpByNumber: function(start){
+                        jumpByNumber(start,vue);
+                    },
+                    deleteBean: function (id) {
+                        if(!checkDeleteLink())
+                            return;
+                        var url = this.uri+"/"+id;
+                        axios.delete(url).then(function(response){
+                            if(0!=response.data.length) {
+                                alert("用户您好，您当前的操作存在限制，为保证您数据的完整性，请先删除与工具相关联的图片和文件再执行删除操作");
+                            }
+                            else {
+                                vue.list(0);
+                            }
+                        });
+                    }
+                }
+            });
+        });
+
+        //判断是否为空
+        function checkEmpty(value,text){
+            if(null==value || value.length==0){
+                alert(text+ "不能为空");
+                return false;
+            }
+            return true;
+        }
+        //确实是否要删除
+        function checkDeleteLink(){
+            var confirmDelete = confirm("确认要删除？");
+            if(confirmDelete)
+                return true;
+            return false;
+        }
+        //跳转函数
+        function jump(page,vue){
+            if('first'== page && !vue.pagination.first)
+                vue.list(0);
+
+            else if('pre'== page &&	vue.pagination.hasPrevious )
+                vue.list(vue.pagination.number-1);
+
+            else if('next'== page && vue.pagination.hasNext)
+                vue.list(vue.pagination.number+1);
+
+            else if('last'== page && !vue.pagination.last)
+                vue.list(vue.pagination.totalPages-1);
+        }
+        //跳转函数
+        function jumpByNumber(start,vue){
+            if(start!=vue.pagination.number)
+                vue.list(start);
+        }
+        //获取地址栏参数的函数
+        function getUrlParms(para){
+            var search=location.search; //页面URL的查询部分字符串
+            var arrPara=new Array(); //参数数组。数组单项为包含参数名和参数值的字符串，如“para=value”
+            var arrVal=new Array(); //参数值数组。用于存储查找到的参数值
+
+            if(search!=""){
+                var index=0;
+                search=search.substr(1); //去除开头的“?”
+                arrPara=search.split("&");
+
+                for(i in arrPara){
+                    var paraPre=para+"="; //参数前缀。即参数名+“=”，如“para=”
+                    if(arrPara[i].indexOf(paraPre)==0&& paraPre.length<arrPara[i].length){
+                        arrVal[index]=decodeURI(arrPara[i].substr(paraPre.length)); //顺带URI解码避免出现乱码
+                        index++;
+                    }
+                }
+            }
+
+            if(arrVal.length==1){
+                return arrVal[0];
+            }else if(arrVal.length==0){
+                return null;
+            }else{
+                return arrVal;
+            }
+        }
+    </script>
+</body>
+</html>

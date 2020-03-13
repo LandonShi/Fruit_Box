@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <title>分类属性</title>
+    <link rel="stylesheet" type="text/css" href="../../static/css/me.css" th:href="@{/css/me.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.css">
+</head>
+<body style="background-color:  #2e9b56;">
+    <!-- 导航 -->
+    <nav class="ui attached segment pointing" style="padding: 0;">
+        <div class="nav-top">
+            <div class="ui secondary stackable menu">
+                <div class="item right"></div>
+                <a href="#" class="item head-a">首页</a>
+                <a href="kitList" class="item head-a">工具管理</a>
+                <a href="kitUpload" class="item head-a">工具上传</a>
+                <a th:if="${null != session.user}" href="personalHomepage" th:text="${session.user.nickname}" class="item head-a"></a>
+                <a th:if="${null != session.user}" href="foreLogout" class="item head-a">退出</a>
+            </div>
+        </div>
+    </nav>
+
+    <div id="workingArea">
+        <div class="m-container m-padded-tb-big">
+            <div class="ui container">
+                <div class="ui top attached segment">
+                    <div class="column">
+                        <div class="ui breadcrumb">
+                            <div class="breadcrumb-a" style="color: black">
+                                <i class="ui home icon blue"></i>所在位置：
+                                <a href="personalHomepage" class="section" style="color: gray;">个人中心</a>
+                                <div class="divider"> / </div>
+                                <a href="kitCategoryList" class="section" style="color: gray;">工具管理</a>
+                                <div class="divider"> / </div>
+                                <a href="#" class="section" style="color: gray;">{{ category.name}}</a>
+                                <div class="divider"> / </div>
+                                <a href="#">{{kit.name}}</a>
+                                <div class="divider"> / </div>
+                                <div class="active section">图片管理</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ui stackable grid">
+                    <!-- 左边单个图片列表 -->
+                    <div class="eight wide column">
+                        <!-- 内容 -->
+                        <div class="ui attached segment">
+                            <div class="ui vertical segment m-padded-tb-large">
+                                <div class="ui mobile reversed stackable grid">
+                                    <div class="wide column">
+                                        <div class="ui top attached segment">
+                                            <div class="ui middle aligned column grid">
+                                                <div class="column">
+                                                    <h4 style="text-align: center;" class="ui teal header">上传工具图标&nbsp;&nbsp;单个</h4>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="ui attached segment">
+                                            <div class="ui vertical segment m-padded-tb-large">
+                                                <div class="ui mobile reversed stackable grid">
+                                                    <table style="width: 100%; text-align: center;color: black;">
+                                                        <tr>
+                                                            <td>请选择本地图片 尺寸400X400 为佳</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <input id="singlePic" type="file" @change="getSingleFile($event)" name="image" />
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td align="center">
+                                                                <button type="submit" @click="addSingle" class="ui button teal mini">提 交</button>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                    <!-- 分割线 -->
+                                                    <div style="height: 15px;">
+                                                    </div>
+                                                    <table class="ui table celled" style="width: 100%; text-align: center;">
+                                                        <thead >
+                                                            <tr>
+                                                                <th>ID</th>
+                                                                <th>单个图片缩略图</th>
+                                                                <th>删除</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr v-for="ki in singleKitImages">
+                                                                <td>{{ki.id}}</td>
+                                                                <td>
+                                                                    <a title="点击查看原图" :href="'img/kitSingle/'+ki.id+'.jpg'">
+                                                                        <img height="50px" :src="'img/kitSingle/'+ ki.id + '.jpg'">
+                                                                    </a>
+                                                                </td>
+                                                                <td>
+                                                                    <a href="#nowhere" @click="deleteBean(ki.id)">
+                                                                        <i class="ui remove icon red"></i>
+                                                                     </a>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="eight wide column">
+                        <!-- 内容 -->
+                        <div class="ui attached segment">
+                            <div class="ui vertical segment m-padded-tb-large">
+                                <div class="ui mobile reversed stackable grid">
+                                    <div class="wide column">
+                                        <div class="ui top attached segment">
+                                            <div class="ui middle aligned column grid">
+                                                <div class="column">
+                                                    <h4 style="text-align: center;" class="ui teal header">上传工具使用图片&nbsp;&nbsp;详情</h4>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="ui attached segment">
+                                            <div class="ui vertical segment m-padded-tb-large">
+                                                <div class="ui mobile reversed stackable grid">
+                                                    <table style="width: 100%; text-align: center; color: black;">
+                                                        <tr>
+                                                            <td>请选择本地图片 宽度790 为佳</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <input id="detailPic" type="file" @change="getDetailFile($event)" name="image" />
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td align="center">
+                                                                <button type="submit" @click="addDetail" class="ui button teal mini">提 交</button>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                    <!-- 分割线 -->
+                                                    <div style="height: 15px;">
+                                                    </div>
+                                                    <table style="width: 100%; text-align: center;" class="ui table celled">
+                                                        <thead >
+                                                            <tr>
+                                                                <th>ID</th>
+                                                                <th>详情图片缩略图</th>
+                                                                <th>删除</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr v-for="ki in detailKitImages">
+                                                                <td>{{ki.id}}</td>
+                                                                <td>
+                                                                    <a title="点击查看原图" :href="'img/kitDetail/'+ki.id+'.jpg'">
+                                                                        <img height="50px" :src="'img/kitDetail/'+ ki.id + '.jpg'">
+                                                                    </a>
+                                                                </td>
+                                                                <td>
+                                                                    <a href="#nowhere" @click="deleteBean(ki.id)">
+                                                                        <i class="ui remove icon red"></i>
+                                                                    </a>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}" ></script>
+    <script type="text/javascript" th:src="@{/js/vue.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/axios.min.js}"></script>
+    <script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>
+    <script>
+        $(function(){
+            var kid = getUrlParms("kid");
+            var data1 = {
+               uri:'kitImages',
+               singleKitImages: [],
+               detailKitImages: [],
+               kit: '',
+               category:'',
+               singleFile:'',
+               detailFile:''
+            };
+
+            var vue = new Vue({
+               el: '#workingArea',
+               data: data1,
+               mounted:function(){ //mounted　表示这个 Vue 对象加载成功了
+                   this.listSingles();
+                   this.listDetails();
+                   this.getKit(kid);
+               },
+               methods: {
+                   getKit: function(kid){
+                       var url = "kits/" + kid;
+                       axios.get(url).then(function(response) {
+                           vue.kit = response.data;
+                           vue.category = vue.kit.category;
+                       })
+                   },
+                   listSingles:function(start){
+                       var url =  "kits/" + kid + "/" + this.uri + "?type=single";
+                       axios.get(url).then(function(response) {
+                           vue.singleKitImages = response.data;
+                       });
+                   },
+                   listDetails:function(start){
+                       var url =  "kits/" + kid + "/" + this.uri + "?type=detail";
+                       axios.get(url).then(function(response) {
+                           vue.detailKitImages = response.data;
+                       });
+                   },
+                   addSingle: function () {
+                       if(!checkEmpty(this.singleFile, "单个工具图片"))
+                           return;
+                       var url = this.uri + "?type=single&kid=" + kid;
+                       var formData = new FormData();
+                       formData.append("image", this.singleFile);
+                       axios.post(url,formData).then(function(response){
+                           vue.listSingles();
+                           $("#singlePic").val('');
+                           vue.singleFile = null;
+                       });
+                   },
+                   addDetail: function () {
+                       if(!checkEmpty(this.detailFile, "详情工具图片"))
+                           return;
+                       var url = this.uri+"?type=detail&kid=" + kid;
+                       var formData = new FormData();
+                       formData.append("image", this.detailFile);
+                       axios.post(url,formData).then(function(response){
+                           vue.listDetails();
+                           $("#detailPic").val('');
+                           vue.detailFile = null;
+                       });
+                   },
+                   deleteBean: function (id) {
+                       if(!checkDeleteLink())
+                           return;
+                       var url = this.uri+"/"+id;
+                       axios.delete(url).then(function(response){
+                           vue.listSingles();
+                           vue.listDetails();
+                       });
+                   },
+                   getSingleFile: function (event) {
+                       this.singleFile = event.target.files[0];
+                   },
+                   getDetailFile: function (event) {
+                       this.detailFile = event.target.files[0];
+                   },
+               }
+           });
+        });
+
+        //获取地址栏参数的函数
+        function getUrlParms(para){
+            var search=location.search; //页面URL的查询部分字符串
+            var arrPara=new Array(); //参数数组。数组单项为包含参数名和参数值的字符串，如“para=value”
+            var arrVal=new Array(); //参数值数组。用于存储查找到的参数值
+
+            if(search!=""){
+                var index=0;
+                search=search.substr(1); //去除开头的“?”
+                arrPara=search.split("&");
+
+                for(i in arrPara){
+                    var paraPre=para+"="; //参数前缀。即参数名+“=”，如“para=”
+                    if(arrPara[i].indexOf(paraPre)==0&& paraPre.length<arrPara[i].length){
+                        arrVal[index]=decodeURI(arrPara[i].substr(paraPre.length)); //顺带URI解码避免出现乱码
+                        index++;
+                    }
+                }
+            }
+            if(arrVal.length==1){
+                return arrVal[0];
+            }else if(arrVal.length==0){
+                return null;
+            }else{
+                return arrVal;
+            }
+        }
+
+        //判断是否为空
+        function checkEmpty(value,text){
+            if(null==value || value.length==0){
+                alert(text+ "不能为空");
+                return false;
+            }
+            return true;
+        }
+
+        //确实是否要删除
+        function checkDeleteLink(){
+            var confirmDelete = confirm("确认要删除？");
+            if(confirmDelete)
+                return true;
+            return false;
+        }
+    </script>
+</body>
+</html>

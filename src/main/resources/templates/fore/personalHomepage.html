@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <title>果函网——个人</title>
+    <link rel="stylesheet" type="text/css" href="../../static/css/me.css" th:href="@{/css/me.css}"/>
+    <link rel="stylesheet" type="text/css" href="../../static/css/animate.css" th:href="@{/css/animate.css}" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.css" />
+    <style>
+        body{
+            margin: 0;
+            width: 100%;
+            color: #fff;
+            background: linear-gradient(-45deg, #ee7752, lightskyblue, darkorange, #d53004);
+            background-size: 400% 400%;animation: gradientBG 15s ease infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航 -->
+    <nav class="ui attached segment pointing" style="padding: 0;">
+        <div class="nav-top">
+            <div class="ui secondary stackable menu">
+                <div class="item right"></div>
+                <a href="#" class="item head-a">首页</a>
+                <a href="#" class="item head-a">联系管理员</a>
+                <a href="#" class="item head-a">意见反馈</a>
+                <a href="kitCategoryList" class="item head-a">工具管理</a>
+                <a href="#" class="item head-a">文章撰写</a>
+                <a th:if="${null != session.user}" href="personalHomepage" th:text="${session.user.nickname}" class="item head-a"></a>
+                <a th:if="${null != session.user}" href="foreLogout" class="item head-a">退出</a>
+            </div>
+        </div>
+    </nav>
+
+    <div id="workArea">
+        <div class="m-padded-tb-big">
+            <div class="ui container" style="width: 95%; height: 100%;">
+                <div class="ui stackable grid">
+                    <!-- 选项链接 -->
+                    <div class="three wide column">
+                        <div class="ui top attached segment" style="border: solid 1px white;height:100%;">
+                            <div class="ui selection list list-item">
+                                <div class="item item-nav" style="margin-bottom: 12px;margin-top: 5px;">
+                                    <i class="user icon large orange"></i>
+                                    <div class="content">
+                                        <div style="margin-top: 5px; color: gray; font-size: 14px;">
+                                            <a @click="showMycount1" href="#">我的账号</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item item-nav" style="margin-bottom: 12px;">
+                                    <i class="lock icon large red"></i>
+                                    <div class="content">
+                                        <div style="margin-top: 5px; color: gray; font-size: 14px;">
+                                            <a @click="showPassword1" href="#">密码管理</a></div>
+                                    </div>
+                                </div>
+                                <div class="item item-nav" style="margin-bottom: 12px;">
+                                    <i class="mail icon large teal"></i>
+                                    <div class="content">
+                                        <div style="margin-top: 5px; color: gray; font-size: 14px;">
+                                            <a @click="showEmail1" href="#">邮箱绑定</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item item-nav" style="margin-bottom: 12px;">
+                                    <i class="paw icon large teal"></i>
+                                    <div class="content">
+                                        <div style="margin-top: 5px; color: gray; font-size: 14px;">
+                                            <a @click="showRecentUse1" href="#">最近使用</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item item-nav" style="margin-bottom: 12px;">
+                                    <i class="heart red large icon"></i>
+                                    <div class="content">
+                                        <div style="margin-top: 5px; color: gray; font-size: 14px;">
+                                            <a @click="showMyCollect1" href="#">我的收藏</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item item-nav" style="margin-bottom: 12px;">
+                                    <i class="cloud upload large icon purple"></i>
+                                    <div class="content">
+                                        <div style="margin-top: 5px; color: gray; font-size: 14px;">
+                                            <a @click="showKitUploadFuc" href="#">工具上传</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item item-nav" style="margin-bottom: 12px;">
+                                    <i class="edit icon large blue"></i>
+                                    <div class="content">
+                                        <div style="margin-top: 5px; color: gray; font-size: 14px;">
+                                            <a @click="showArticleFuc" href="#">文章撰写</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item item-nav" style="margin-bottom: 12px;">
+                                    <i class="send icon large green "></i>
+                                    <div class="content">
+                                        <div style="margin-top: 5px; color: gray; font-size: 14px;">
+                                            <a @click="showIdea1" href="#">意见反馈</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item item-nav" style="margin-bottom: 12px;">
+                                    <i class="world icon large teal"></i>
+                                    <div class="content">
+                                        <div style="margin-top: 5px; color: gray; font-size: 14px;">
+                                            <a @click="showCooperate1" href="#">寻求合作</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 我的账号 -->
+                    <div class="nine wide column"  v-show="showMyCount">
+                        <div class="ui top attached segment" >
+                            <table class="ui basic table" style="border: none;">
+                                <thead>
+                                    <tr>
+                                        <th style="color: orange;width: 25%;">属性名</th>
+                                        <th style="color: orange; width: 50%">属性值</th>
+                                        <th style="color: orange; width: 25%;">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>账号</td>
+                                        <td style="color: lightslategray;font-size: 12px;">{{ user.username}}</td>
+                                        <td>
+                                            <span style="color: lightslategray;font-size: 12px;"><i class="ban icon red"></i>不支持修改</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>入站时间</td>
+                                        <td style="color: lightslategray;font-size: 12px;">{{user.createTime}}</td>
+                                        <td>
+                                            <span style="color: lightslategray;font-size: 12px;"><i class="ban icon red"></i>不支持修改</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>密码</td>
+                                        <td style="color: lightslategray;font-size: 12px;">{{user.password}} <a href="#"></a></td>
+                                        <td>
+                                            <span style="color: lightslategray;font-size: 12px;"><i class="ban icon red"></i>不可点击</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>邮箱</td>
+                                        <td style="color: lightslategray;font-size: 12px;">{{user.email}}</td>
+                                        <td>
+                                            <span style="color: lightslategray;font-size: 12px;"><i class="ban icon red"></i>不可点击</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>昵称</td>
+                                        <td style="color: lightslategray;font-size: 12px;">{{user.nickname}}</td>
+                                        <td>
+                                            <a href="#" class="ui red mini basic"><i class="edit icon"></i></a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="ui top attached segment">
+                            <div class="ui header" style="font-size: 14px; color: orange">最近登录</div>
+                            <table class="ui basic compact table table-login" style="border: none; text-align: center;">
+                                <thead>
+                                    <tr>
+                                        <th style="font-size: 13px;width: 15%;">登录方式</th>
+                                        <th style="font-size: 13px;width: 15%;">设备类型</th>
+                                        <th style="font-size: 13px;width: 35%;">IP地址</th>
+                                        <th style="font-size: 13px;width: 35%;">登录时间&nbsp;<label class="ui label mini red">刚刚</label></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="logUser in logUsers">
+                                        <td style="color: lightslategray;font-size: 13px;">{{ logUser.typeLogin}}</td>
+                                        <td style="color: lightslategray;font-size: 13px;">{{ logUser.deviceType}}</td>
+                                        <td style="color: lightslategray;font-size: 13px;">{{ logUser.ip }}</td>
+                                        <td style="color: lightslategray;font-size: 13px;">{{ logUser.loginDate}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="ui top attached segment">
+                            <div class="ui two column grid">
+                                <div class="column">
+                                    <a class="standard shop modal" href="#">
+                                        <div class="emailEdit">
+                                            <i class="mail outline icon"></i>
+                                            <span style="color: black;">订阅管理</span>
+                                            <span style="color: black; font-size: 12px;">解绑 修改</span>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="column">
+                                    <a  href="#">
+                                        <div class="standard emailEdit modal">
+                                            <i class="user remove icon" style="font-size: 35px; padding: 13px; color: lightskyblue"></i>
+                                            <span style="color: black;">账号注销</span>
+                                            <span style="color: black; font-size: 12px;">永久注销 谨慎操作</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ui top attached segment" style="border: solid 1px white;">
+                            <div style="padding: 15px; width: 55%;">
+                                <div style="padding: 8px;">
+                                    <span class="announceWord" style="color: #0a0a0b;">精巧于设计 承载你的快乐 </span>
+                                </div>
+                                <div style="padding: 8px; width: 85%;">
+                                    <span style="font-size: 25px; font-weight: 500; color: #0a0a0b;">
+                                        下载果函APP  体验奇思妙想
+                                    </span>
+                                </div>
+                            </div>
+                            <div style="float: left;margin-top: -50px; margin-left: 45%;">
+                                <div class="ui button inverted blue mini">扫码下载<i class="long arrow right icon"></i></div>
+                            </div>
+                            <div style="float: left;margin-top: -80px; margin-left:65%;">
+                                <img :src="'img/other/orange.jpg'" style="width: 55px;" />
+                            </div>
+                            <div style="float: left;margin-top: -95px; margin-left:85%;">
+                                <img :src="'img/qrCode/weixinoffice.png'" style="width: 85px;" />
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 密码管理 -->
+                    <div class="nine wide column"  v-show="showPassword">
+                        <div class="ui top attached segment" style="height: 100%;">
+                            <div class="ui header" style="color: red; font-size: 14px;">
+                                <i class="lock icon large red"></i>请设置新密码
+                            </div>
+                            <div class="ui fluid form segment" style="border: none;">
+                                <div class="two fields">
+                                    <div class="field">
+                                        <label>账号名</label>
+                                        <input placeholder="" type="text" v-model="user.username" readonly="readonly">
+                                    </div>
+                                    <div class="field">
+                                        <label>昵称</label>
+                                        <input placeholder="" type="text" v-model="user.nickname" readonly="readonly">
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label>密码</label>
+                                    <input placeholder="请输入新密码" type="password" v-model="password">
+                                </div>
+                                <div class="ui submit button basic teal mini">
+                                    <a @click="updatePassword" href="#">确定</a>
+                                </div>
+                            </div>
+                            <div style="height: 340px;"></div>
+                        </div>
+                    </div>
+                    <!-- 邮箱绑定 -->
+                    <div class="nine wide column"  v-show="showEmail">
+                        <div class="ui top attached segment" style="height: 100%;width: 100%;">
+                            <div class="ui header" style="color: teal; font-size: 14px;">绑定邮箱</div>
+                            <span style="color: darkgray;letter-spacing: 1px;">绑定邮箱 提升账号防御力</span>
+                            <br/>
+                            <span style="color: darkgray;letter-spacing: 1px;">活动福利信息快速获取</span>
+                            <br/>
+                            <div class="ui header">请输入正确邮箱</div>
+                            <div class="ui action input" style="width: 50%;">
+                                <input v-model="newEmail" name="newEmail"  type="text" placeholder="请重新输入邮箱">
+                                <button @click="newEmailFuc" class="ui button teal">提交</button>
+                            </div>
+                            <div style="height: 420px;"></div>
+                        </div>
+                    </div>
+                    <!-- 最近使用 -->
+                    <div class="nine wide column"  v-show="showRecentUse">
+                        <div class="ui top attached segment" style="height: 100%;">
+                            <div class="ui header" style="color: teal; font-size: 14px;">
+                                <i class="paw icon large teal"></i>最近使用
+                            </div>
+                            <span class="">
+                                <a href="#"><i class="sort numeric ascending icon"></i>升序</a>
+                            </span>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <span class="">
+                                <a href="#"><i class="sort numeric descending icon"></i>倒序</a>
+                            </span>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <div class="ui action input mini" style="width: 35%;">
+                                <input type="text" placeholder="请输入名称 或模块名 或分类名">
+                                <button class="ui icon button">
+                                    <i class="search icon"></i>
+                                </button>
+                            </div>
+                            <table class="ui very basic table">
+                                <thead>
+                                <tr>
+                                    <th style="font-size: 13px;color: teal;">名称</th>
+                                    <th style="font-size: 13px;color: teal;">所属模块</th>
+                                    <th style="font-size: 13px;color: teal;">所属分类</th>
+                                    <th style="font-size: 13px;color: teal;">时间点</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td style="width: 35%;">
+                                        <a href="#">IDEA</a>
+                                    </td>
+                                    <td style="width: 25%">
+                                        <a href="">工具</a>
+                                    </td>
+                                    <td style="width: 20%">
+                                        <a href="">热门</a>
+                                    </td>
+                                    <td style="width: 19%">2020-2-24 17:32:25</td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 35%;">
+                                        <a href="#">解开Spring技术内幕</a>
+                                    </td>
+                                    <td style="width: 25%">
+                                        <a href="">文章</a>
+                                    </td>
+                                    <td style="width: 20%">
+                                        <a href="">Spring</a>
+                                    </td>
+                                    <td style="width: 19%">2020-2-24 17:32:25</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <div style="height: 390px;"></div>
+                        </div>
+                    </div>
+                    <!-- 我的收藏 -->
+                    <div class="nine wide column"  v-show="showMyCollect">
+                        <div class="ui top attached segment" style="height: 100%;">
+                            <div class="ui header" style="color: red; font-size: 14px;">
+                                <i class="heart icon"></i>我的收藏
+                            </div>
+                            <span class="">
+                                <a href="#" style="color:black;"><i class="sort numeric ascending icon"></i>升序</a>
+                            </span>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <span class="">
+                                <a href="#" style="color:black;"><i class="sort numeric descending icon"></i>倒序</a>
+                            </span>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <div class="ui action input mini" style="width: 35%;">
+                                <input type="text" placeholder="请输入名称 或模块名 或分类名">
+                                <button class="ui icon button">
+                                    <i class="search icon"></i>
+                                </button>
+                            </div>
+                            <table class="ui red table">
+                                <thead>
+                                    <tr>
+                                        <th style="font-size: 13px;color: red;">名称</th>
+                                        <th style="font-size: 13px;color: red;">所属模块</th>
+                                        <th style="font-size: 13px;color: red;">所属分类</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="c in collects">
+                                        <td style="width: 35%;">
+                                            <a :href="'fore_kit_download?kid=' + c.id">{{c.name}}</a>
+                                        </td>
+                                        <td style="width: 25%">
+                                            <a href="#">工具</a>
+                                        </td>
+                                        <td style="width: 20%">
+                                            <a href="">{{c.category.name}}</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div style="height: 370px;"></div>
+                        </div>
+                    </div>
+                    <!-- 工具上传 -->
+                    <div class="nine wide column"  v-show="showKitUpload">
+                        <div class="ui top attached segment" style="height: 100%;">
+                            <div class="ui header" style="color: purple; font-size: 14px;">
+                                <i class="cloud upload large icon purple"></i>上传工具
+                            </div>
+                            <span style="color: darkgray;letter-spacing: 1px;">上传工具后台会有周期审核，请勿上传危害他人工具软件</span>
+                            <br/>
+                            <span style="color: darkgray;letter-spacing: 1px;">请勿描述恶意信息，一经发现，立即封禁账号</span>
+                            <br/>
+                            <a href="kitUpload" class="ui button basic teal mini">点击上传</a>
+                            <div style="height: 490px;"></div>
+                        </div>
+                    </div>
+                    <!-- 文章撰写 -->
+                    <div class="nine wide column"  v-show="showArticle">
+                        <div class="ui top attached segment" style="height: 100%;">
+                            <div class="ui header" style="color: blue; font-size: 14px;">
+                                <i class="edit icon large blue"></i>文章撰写
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 意见反馈 -->
+                    <div class="nine wide column"  v-show="showIdea">
+                        <div class="ui top attached segment" style="height: 100%;">
+                            <div class="ui header" style="color: green ; font-size: 14px;">
+                                <i class="send icon green "></i>意见反馈
+                            </div>
+                            <div class="ui form">
+                                <div class="field">
+                                    <label><span style="color: red;">*</span> &nbsp;问题描述</label>
+                                    <textarea placeholder="请输入您所遇到的问题，或者您觉得需要改进的地方，烦请提供宝贵意见"></textarea>
+                                </div>
+                                <div class="field">
+                                    <label>相关图片</label>
+                                    <a href="#">
+                                        <div style="width: 60px;height: 60px;border: solid 1px lightgray;position:relative;border-radius: 10px;">
+                                            <i class="plus icon" style="color: lightgray; position:absolute; margin:30% auto;top:0;right: 0;left: 0;right:0;"></i>
+                                        </div>
+                                    </a>
+                                    <span style="font-size: 13px;color: lightgray;">单张图片不超过2M，最多4张</span>
+                                </div>
+                                <div class="field">
+                                    <label>联系方式</label>
+                                    <input type="text" placeholder="请输入可联系的邮箱，我们会将处理结果发送至该邮箱，一经采用，奖励丰厚" />
+                                </div>
+                                <div class="field ui">
+                                    <div class="ui button basic teal mini">提交反馈</div>
+                                </div>
+                            </div>
+                            <div style="height: 140px;"></div>
+                        </div>
+                    </div>
+                    <!-- 寻求合作 -->
+                    <div class="nine wide column"  v-show="showCooperate">
+                        <div class="ui top attached segment" style="height:100%;">
+                            <div class="ui header" style="color: teal; font-size: 14px;position:relative;border-radius: 10px;">
+                                <i class="world icon large teal"></i>寻求合作
+                            </div>
+                            <div style="position:absolute; margin:15% auto;top:0;right: 0;left: 0;right:0;width:250px;height: 250px; text-align: center;">
+                                <span style="font-size: 18px;color: darkgray;">使用微信扫描下方二维码</span>
+                                <br>
+                                <span style="font-size: 18px;color: darkgray;">快速处理 申请请注明合作意向</span>
+                                <div class="ui animated pulse" style="margin-top: 12%;">
+                                    <img :src="'img/qrCode/weixinoffice.png'" style="width: 140px;" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 个人信息-->
+                    <div class="four wide column">
+                        <div class="ui top attached segment" style="height: 100%;">
+                            <div style="text-align: center; margin-bottom: 25px;">
+                                <div style="margin-top: 30px;">
+                                    <div class="ui circular image">
+                                        <div class="ui dimmer">
+                                            <div class="content">
+                                                <div class="center">
+                                                    <div class="ui inverted button mini">
+                                                        <div class="standard changeAvatar modal">
+                                                            更换
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <img :src="'img/avatar/' + user.id + '.jpg'" alt="用户头像" style="width: 80px; border-radius: 50%;"/>
+                                    </div>
+                                </div>
+                                <div class="ui header" style="font-size: 25px;">Hi，{{user.nickname}}</div>
+                                <span v-if="runMsg" style="color: darkgray;">{{ runMsg }}</span>
+                            </div>
+                            <div class="ui inverted divider"></div>
+                            <div style="padding: 10px; margin-top: 15px; margin-bottom: 15px;">
+                                <div class="ui two column grid" style="margin-bottom: 12px;">
+                                    <div class="column"><div class="ui header" style="font-size: 14px; color: orange">帮助中心</div></div>
+                                    <div class="right aligned column">
+                                        <a href="#" style="font-size: 12px;">更多 ></a>
+                                    </div>
+                                </div>
+                                <div class="ui label large" style="margin-top: 10px; background: floralwhite;">
+                                    <a href="">如何注销账号？</a>
+                                </div>
+                                <div class="ui label large" style="margin-top: 10px; background: floralwhite;">
+                                    <a href="#">如何解除邮箱绑定？</a>
+                                </div>
+                                <div class="ui label large" style="margin-top: 10px; background: floralwhite;">
+                                    <a href="#">本站上新</a>
+                                </div>
+                                <div class="ui label large" style="margin-top: 10px; background: floralwhite;">
+                                    <a href="#">秘密链接</a>
+                                </div>
+                            </div>
+                            <div class="ui inverted divider"></div>
+                            <div style="padding: 10px; margin-top: 15px; height: 100px;">
+                                <div class="ui two column grid">
+                                    <div class="column"><div class="ui header" style="font-size: 14px; color: orange">意见反馈</div></div>
+                                    <div class="right aligned column">
+                                        <a href="#" style="font-size: 12px;">反馈 ></a>
+                                    </div>
+                                </div>
+                                <div class="ui column grid">
+                                    <div style="margin: 0 auto;">
+                                        <img :src="'img/other/happy.png'" style="width: 70px;" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 修改昵称 -->
+            <div class="ui container">
+                <div class="ui modal updatePassword" style="margin-top: -14%;">
+                    <i class="close icon"></i>
+                    <div class="header"><img :src="'img/other/orange.jpg'" style="width: 35px;" /><span>用户修改昵称</span></div>
+                    <div class="content">
+                        <div class="description" style="color: black">
+                            <div class="ui header"></div>
+                            <div class="ui warning form segment">
+                                <div class="ui warning message">
+                                    <div class="header">请勿输入敏感词汇</div>
+                                </div>
+                                <div class="field">
+                                    <label>昵称</label>
+                                    <input v-model="nickname" placeholder="" type="text">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <div class="ui inverted red basic button mini">关闭</div>
+                        <div class="ui inverted positive right basic button mini">
+                            <a @click="updateUserNickname" href="#">提交</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 订阅管理-->
+            <div class="ui container">
+                <div class="ui modal orderMail" style="margin-top: -16%;">
+                    <i class="close icon"></i>
+                    <div class="header">邮箱订阅</div>
+                    <div class="content" style="border: solid 1px orange;">
+                        <div class="ui medium image" style="border: solid 1px">
+                            <img :src="'img/other/orange.jpg'" style="width: 105px;" />
+                        </div>
+                        <div class="ui pointing  label" style="color: orange;letter-spacing: 2px;">
+                            请务重复订阅哦
+                        </div>
+                        <div class="description" style="text-align: center;">
+                            <div class="ui header">请输入您的邮箱，收到邮件后请点击确认完成认证</div>
+                            <div class="ui action input" style="width: 50%;">
+                                <input v-model="orderEmail" type="text" placeholder="请输入邮箱">
+                                <button @click="orderEmailFun" class="ui button orange">订阅</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <div class="ui positive right labeled icon button">
+                          确认
+                            <i class="checkmark icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 账号注销 -->
+            <div class="ui container">
+                <div class="ui modal logoutAccount" style="margin-top: -16%;">
+                    <i class="close icon"></i>
+                    <div class="header">账号注销</div>
+                    <div class="content" style="border: solid 1px orange;">
+                        <div class="ui medium image" style="border: solid 1px">
+                            <img :src="'img/other/cry1.png'" style="width: 105px;" />
+                        </div>
+                        <div class="ui pointing label" style="color: black;letter-spacing: 2px;">
+                            您还会回来吗
+                        </div>
+                        <div class="description logoutAccount-user" style="text-align: center;">
+                            <div class="ui header">请输入您的密码，我们将会在验证之后开始一段简短的注销流程</div>
+                            <div class="ui action input" style="width: 50%;">
+                                <input  type="text" placeholder="请输入密码">
+                                <button class="ui button orange">验证</button>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <div class="ui positive right labeled icon button">
+                            确认
+                            <i class="checkmark icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 头像更换 -->
+            <div class="ui container">
+                <div class="ui modal changeAvatarModal" style="margin-top: -16%;">
+                    <i class="close icon"></i>
+                    <div class="header">更换头像</div>
+                    <div class="content" style="border: solid 1px orange;">
+                        <div class="ui medium image" style="border: solid 1px">
+                            <img :src="'img/other/happy3.png'" style="width: 105px;" />
+                        </div>
+                        <div class="ui pointing label" style="color: black;letter-spacing: 2px;">
+                            该换什么呢！
+                        </div>
+                        <div class="description" style="text-align: center;">
+                            <div class="ui action input" style="width: 50%;">
+                                <input  type="file" name="avatar" @change="getFile($event)">
+                                <button @click="updateAvatar"  class="ui button orange">提交</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <div class="ui positive right labeled icon button">
+                            确认
+                            <i class="checkmark icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../static/js/jquery.min.js" th:src="@{/js/jquery.min.js}"></script>
+    <script src="../../static/js/vue.min.js" th:src="@{/js/vue.min.js}"></script>
+    <script src="../../static/js/axios.min.js" th:src="@{/js/axios.min.js}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            var data1 = {
+                uri: 'getUser',
+                uri1: 'updatePassword',
+                uri2: 'logusers',
+                uri3:'users',
+                showMyCount: true,
+                showPassword: false,
+                showEmail: false,
+                showRecentUse: false,
+                showMyCollect: false,
+                showKitUpload: false,
+                showArticle: false,
+                showIdea: false,
+                showCooperate: false,
+                user: '',
+                password:'',
+                logUsers:[],
+                nickname:'',
+                runMsg: '云淡风轻过午天，傍花随柳过前川。',
+                orderEmail:'',
+                file: null,
+                newEmail:'',
+                collects:[]
+            };
+
+            var vue = new Vue({
+                el: '#workArea',
+                data: data1,
+                mounted: function() {
+                    this.getUser();
+                    this.getLogUser();
+                },
+                methods:{
+                    showMycount1: function () {
+                        this.showMyCount = true;
+                        this.showPassword = false;
+                        this.showEmail = false;
+                        this.showRecentUse = false;
+                        this.showMyCollect = false;
+                        this.showKitUpload = false;
+                        this.showArticle = false;
+                        this.showIdea = false;
+                        this.showCooperate = false;
+                    },
+                    showPassword1: function () {
+                        this.showMyCount = false;
+                        this.showPassword = true;
+                        this.showEmail = false;
+                        this.showRecentUse = false;
+                        this.showMyCollect = false;
+                        this.showKitUpload = false;
+                        this.showArticle = false;
+                        this.showIdea = false;
+                        this.showCooperate = false;
+                    },
+                    showEmail1: function () {
+                        this.showPassword = false;
+                        this.showMyCount = false;
+                        this.showEmail = true;
+                        this.showRecentUse = false;
+                        this.showMyCollect = false;
+                        this.showKitUpload = false;
+                        this.showArticle = false;
+                        this.showIdea = false;
+                        this.showCooperate = false;
+
+                    },
+                    showRecentUse1: function () {
+                        this.showPassword = false;
+                        this.showMyCount = false;
+                        this.showEmail = false;
+                        this.showRecentUse = true;
+                        this.showMyCollect = false;
+                        this.showKitUpload = false;
+                        this.showArticle = false;
+                        this.showIdea = false;
+                        this.showCooperate = false;
+                    },
+                    showMyCollect1: function () {
+                        this.showPassword = false;
+                        this.showMyCount = false;
+                        this.showEmail = false;
+                        this.showRecentUse = false;
+                        this.showMyCollect = true;
+                        this.showKitUpload = false;
+                        this.showArticle = false;
+                        this.showIdea = false;
+                        this.showCooperate = false;
+                        vue.getCollect();
+                    },
+                    showKitUploadFuc: function() {
+                        this.showPassword = false;
+                        this.showMyCount = false;
+                        this.showEmail = false;
+                        this.showRecentUse = false;
+                        this.showMyCollect = false;
+                        this.showKitUpload = true;
+                        this.showArticle = false;
+                        this.showIdea = false;
+                        this.showCooperate = false;
+                    },
+                    showArticleFuc: function() {
+                        this.showPassword = false;
+                        this.showMyCount = false;
+                        this.showEmail = false;
+                        this.showRecentUse = false;
+                        this.showMyCollect = false;
+                        this.showKitUpload = false;
+                        this.showArticle = true;
+                        this.showIdea = false;
+                        this.showCooperate = false;
+                    },
+                    showIdea1: function () {
+                        this.showPassword = false;
+                        this.showMyCount = false;
+                        this.showEmail = false;
+                        this.showRecentUse = false;
+                        this.showMyCollect = false;
+                        this.showKitUpload = false;
+                        this.showArticle = false;
+                        this.showIdea = true;
+                        this.showCooperate = false;
+
+                    },
+                    showCooperate1: function () {
+                        this.showPassword = false;
+                        this.showMyCount = false;
+                        this.showEmail = false;
+                        this.showRecentUse = false;
+                        this.showMyCollect = false;
+                        this.showKitUpload = false;
+                        this.showArticle = false;
+                        this.showIdea = false;
+                        this.showCooperate = true;
+                    },
+                    getUser: function () {
+                        var url = this.uri;
+                        axios.get(url).then(function (response) {
+                            vue.user = response.data;
+                        });
+                    },
+                    getLogUser: function() {
+                        var url = this.uri2;
+                        axios.get(url).then(function (response) {
+                            vue.logUsers = response.data;
+                        });
+                    },
+                    updateUserNickname: function() {
+                        var url = this.uri3 + "?nickname=" + this.nickname;
+                        if(this.nickname.length == 0) {
+                            alert("输入为空，请重写输入！");
+                            return;
+                        }
+                        axios.put(url,this.nickname).then(function (response) {
+                            if(response.data.code == 0) {
+                                alert("更新成功！请重新登录");
+                            }else {
+                                alert(JSON.stringify(response.data.message));
+                            }
+                        });
+                    },
+                    orderEmailFun: function() {
+                        var myReg = /^[-_A-Za-z0-9]+@([_A-Za-z0-9]+\.)+[A-Za-z0-9]{2,3}$/;
+                        if(!myReg.test(this.orderEmail)) {
+                            alert("邮箱格式不正确");
+                            return;
+                        }
+                        var url = "emailSend?orderEmail=" + this.orderEmail;
+                        axios.get(url).then(function (response) {
+                            if(response.data.code == 0) {
+                                alert("发送成功。即将返回页面")
+                            } else {
+                                alert(JSON.stringify(response.data.message));
+                            }
+                        });
+
+                    },
+                    updateAvatar: function() {
+                        if(this.file == null)
+                            return;
+                        var flag = 22;
+                        var url = this.uri3 + "/" + flag;
+                        var formData = new FormData();
+                        formData.append("file", this.file);
+                        axios.put(url,formData).then(function (response) {
+                            if(response.code == 1) {
+                                alert(JSON.stringify(response.data.message));
+                                vue.file = null;
+                                return;
+                            }
+                            vue.file = null;
+                            alert("更新成功！请重新登录");
+                        });
+                    },
+                    updatePassword: function () {
+                        var url = this.uri1 + "?password=" + this.password;
+                        axios.put(url).then(function (response) {
+                            alert(JSON.stringify(response.data));
+                            window.location.href = "foreLogin";
+                        });
+                    },
+                    getFile: function (event) {
+                        this.file = event.target.files[0];
+                    },
+                    newEmailFuc: function () {
+                        var myReg = /^[-_A-Za-z0-9]+@([_A-Za-z0-9]+\.)+[A-Za-z0-9]{2,3}$/;
+                        if(!myReg.test(this.newEmail)) {
+                            alert("邮箱格式不正确");
+                            return;
+                        }
+                        var url = "email?newEmail=" + this.newEmail;
+                        axios.put(url).then(function (response) {
+                            if(response.data.code === 0) {
+                                alert("更新成功");
+                                window.location.href = "personalHomepage";
+                            }
+                            else {
+                                alert(JSON.stringify(response.data.code));
+                            }
+                        });
+                    },
+                    getCollect: function () {
+                        var url = "collects";
+                        axios.get(url).then(function (response) {
+                            vue.collects = response.data;
+                        });
+                    }
+                }
+            });
+
+            //注册信息模态提示
+            $(".ui.red.mini.basic").on("click",function () {
+                $(".ui.modal.updatePassword").modal({
+                    closable  : false}).modal('show');
+            });
+            //邮箱订阅模态提示
+            $('.standard.shop.modal').on("click", function () {
+                $(".ui.modal.orderMail")
+                    .modal('show');
+            });
+            //注销账号模态提示
+            $('.standard.emailEdit.modal').on("click", function () {
+                $(".ui.modal.logoutAccount")
+                    .modal('show');
+            });
+            //头像遮罩层
+            $('.circular.image').dimmer({
+                on: 'hover'
+            });
+
+            //头像更换模态框
+            $('.standard.changeAvatar.modal').on("click", function () {
+                $(".ui.modal.changeAvatarModal")
+                    .modal('show');
+            });
+
+            //提示用户账号注销不开通
+            $('.description.logoutAccount-user').on("click", function () {
+                alert("尊敬的用户,本站注销功能暂未开通，敬请关注");
+            });
+        })
+    </script>
+</body>
+</html>

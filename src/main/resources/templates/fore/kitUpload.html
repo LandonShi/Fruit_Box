@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <title>工具上传</title>
+    <link rel="stylesheet" type="text/css" href="../../static/css/me.css" th:href="@{/css/me.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.css">
+    <style>
+        body{
+            margin: 0;
+            width: 100%;
+            color: #fff;
+            background: linear-gradient(-45deg, #ee7752, lightskyblue, darkorange, #d53004);
+            background-size: 400% 400%;animation: gradientBG 15s ease infinite;
+        }
+    </style>
+</head>
+<body >
+    <!-- 导航 -->
+    <nav class="ui attached segment pointing" style="padding: 0;">
+        <div class="nav-top">
+            <div class="ui secondary stackable menu">
+                <div class="item right"></div>
+                <a href="#" class="item head-a">首页</a>
+                <a href="kitList" class="item head-a">工具管理</a>
+                <a href="kitUpload" class="item head-a">工具上传</a>
+                <a th:if="${null != session.user}" href="personalHomepage" th:text="${session.user.nickname}" class="item head-a"></a>
+                <a th:if="${null != session.user}" href="foreLogout" class="item head-a">退出</a>
+            </div>
+        </div>
+    </nav>
+
+    <div id="workArea">
+        <div class="m-padded-tb-big">
+            <div class="ui container">
+                <div class="ui stackable grid">
+                    <!-- 选项链接 -->
+                    <div class="twelve wide column" style="height: 100%;">
+                        <div class="ui top attached segment">
+                            <h4 class="ui header green">上传工具</h4>
+                        </div>
+                        <div class="ui attached segment">
+                            <form class="ui form">
+                                <div class="two fields">
+                                    <div class="field">
+                                        <a class="ui green label mini">工具名称</a>
+                                        <div class="field">
+                                            <input v-model.trim="bean.name" type="text" name="name"/>
+                                        </div>
+                                    </div>
+                                    <div class="field">
+                                        <a class="ui green label mini">隶属分类</a>
+                                        <select v-model="bean.category.id" class="ui search dropdown">
+                                            <option v-for="category in categories" :value="category.id" :key="category.id">
+                                                {{ category.name}}
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="two fields">
+                                    <div class="field">
+                                        <a class="ui green label mini">工具状态</a>
+                                        <select v-model="bean.flag" class="ui search dropdown">
+                                            <option value="转载">转载</option>
+                                            <option value="原创">原创</option>
+                                        </select>
+                                    </div>
+                                    <div class="field">
+                                        <a class="ui green label mini">上传时间</a>
+                                        <input v-model="bean.updateTime"  type="date" name="updateTime" placeholder="yyyy-MM-dd格式">
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <a class="ui green label mini">工具信息简介</a>
+                                    <textarea v-model.trim="bean.description" style="height: 250px;"></textarea>
+                                </div>
+                                <div class="field">
+                                    <a class="ui green label mini">上传源文件</a>
+                                    <input type="file" name="file" @change="getFile($event)" />
+                                </div>
+
+                                <div class="ui right aligned container">
+                                    <button type="button" class="ui teal button mini basic" onclick="window.history.go(-1)" >
+                                        <i class="arrow left icon"></i>返回
+                                    </button>
+                                    <a @click="add" href="#nowhere" class="ui orange button mini basic" >
+                                        <i class="send icon"></i>提交
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="four wide column" style="height: 100%;">
+                        <div class="ui top attached segment">
+                            <h4 class="ui header green">待审核列表</h4>
+                        </div>
+                        <div v-if="beans1.length != 0" class="ui attached segment">
+                            <div class="ui selection list" v-for="bean in beans1">
+                                <div class="item">
+                                    <div class="content">
+                                       <span style="color: orangered;">{{ bean.name}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div v-else class="ui attached segment" style="text-align: center;">
+                            <img :src="'img/other/none.png'" style="width: 70px;" alt="没有" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}" ></script>
+    <script type="text/javascript" th:src="@{/js/vector.js}"></script>
+    <script type="text/javascript" th:src="@{/js/vue.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/axios.min.js}"></script>
+    <script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>
+    <script>
+        $(function () {
+            var data1 = {
+                uri:'kits',
+                uri2: 'kitcategories',
+                categories:[],
+                beans: [],
+                bean: { id: 0, name: '',icon:'未审核', description:'', flag:'', updateTime:'', category:{'id':''}},
+                file: null,
+                beans1:[]
+            };
+
+            var vue = new Vue({
+                el: '#workArea',
+                data: data1,
+                mounted: function() {
+                    this.getCategory();
+                    this.getVerify();
+                },
+                methods: {
+                    getCategory: function() {
+                        var url = this.uri2;
+                        axios.get(url).then(function(response) {
+                            vue.categories = response.data.content;
+                        });
+                    },
+                    getVerify: function() {
+                        var url = this.uri;
+                        axios.get(url).then(function (response) {
+                            vue.beans1 = response.data;
+                        });
+                    },
+                    add: function() {
+                        var url = this.uri;
+                        var form = new FormData();
+                        form.append("id", this.bean.id);
+                        form.append("name", this.bean.name);
+                        form.append("description", this.bean.description);
+                        form.append("flag", this.bean.flag);
+                        form.append("updateTime", this.bean.updateTime);
+                        form.append("cid",this.bean.category.id);
+                        form.append("file", this.file);
+                        axios.post(url,form).then(function (response) {
+                            vue.getVerify();
+                            alert("上传成功，请移步已上传列表完善工具信息");
+                            vue.bean = { id: 0, name: '',icon:'未审核', description:'', flag:'', updateTime:'', category:{'id':''}};
+                            vue.file = '';
+                        });
+                    },
+                    getFile: function (event) {
+                        this.file = event.target.files[0];
+                    }
+                }
+            });
+        })
+    </script>
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>订阅成功</title>
+    <link rel="stylesheet" type="text/css" href="../../static/css/me.css" th:href="@{/css/me.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.css">
+    <style>
+        body{
+            margin: 0;
+            width: 100%;
+            color: #fff;
+            background: linear-gradient(-45deg, #ee7752, lightskyblue, darkorange, #23d5ab);
+            background-size: 400% 400%;animation: gradientBG 15s ease infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航 -->
+    <div id="workArea">
+        <nav class="ui attached segment m-shadow-small" style="padding: 0;">
+            <div class="nav-top">
+                <div class="ui secondary stackable menu">
+                    <h4 class="ui teal header item head-title"><i class="cn flag"></i>呆果果的宝函</h4>
+                    <a href="#" class="item head-a">首页</a>
+                    <a href="#" class="item head-a">视频</a>
+                    <a href="kit" class="item head-a">工具</a>
+                    <a href="#" class="item head-a">技术摘要</a>
+                    <a href="#" class="item head-a">关于本站</a>
+                    <div class="item right"></div>
+                    <a th:if="${null==session.user}" href="foreLogin" class="item head-a">登录</a>
+                    <a th:if="${null==session.user}" href="register" class="item head-a">注册</a>
+                    <a th:if="${null!=session.user}" href="personalHomepage" th:text="${session.user.nickname}" class="item head-a"></a>
+                    <a th:if="${null!=session.user}" href="foreLogout" class="item head-a">退出</a>
+                </div>
+            </div>
+        </nav>
+
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+
+        <!--中间内容-->
+        <div  class="m-container-small m-padded-tb-big">
+            <div class="ui container">
+                <div class="ui success large  message">
+                    <h3><a href="#" th:text="${session.user.nickname}"></a></h3>
+                    <p>您已订阅成功，<a href="personalHomepage">点击这里</a>返回个人中心</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部 -->
+        <footer>
+            <div class="ui inverted vertical segment m-padded-tb-large">
+                <div class="ui center aligned container">
+                    <div class="ui divided stackable grid" style="font-size: 12px;">
+                        <p class="ui aligned">本网站提供的视资源部分收集于各大网站，本网站只提供web页面浏览服务，
+                            若本站收集的资源无意侵犯了贵司版权，请给站长邮箱地址来信，我们将会在第一时间将其删除
+                        </p>
+                        <p class="m-text-thin m-text-spaced m-opacity-tiny">
+                            <a href="#" style="color: white;">广告联系</a>
+                        </p>
+                        <p class="m-text-thin m-text-spaced m-opacity-tiny">
+                            <a href="#" style="color: white;">关于本站</a>
+                        </p>
+
+                        <p class="m-text-thin m-text-spaced m-opacity-tiny">
+                            <a href="#" style="color: white;">反馈意见</a>
+                        </p>
+                        <p class="m-text-thin m-text-spaced m-opacity-tiny">
+                            <a href="#" style="color: white;">站外链接</a>
+                        </p>
+                        <p class="m-text-thin m-text-spaced m-opacity-tiny">
+                            Copyright © 2020
+                            <b style="">
+                                <a href="http://www.bhw.com"><font color="orange">www.</font><font color="orange">ghw</font>
+                                    <font color="orange">.com</font></a>
+                            </b>
+                            All Rights Reserved
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="../../static/js/jquery.min.js" th:src="@{/js/jquery.min.js}"></script>
+    <script src="../../static/js/vue.min.js" th:src="@{/js/vue.min.js}"></script>
+    <script src="../../static/js/axios.min.js" th:src="@{/js/axios.min.js}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            var data1 = {
+                uri: 'users'
+            };
+
+            var vue = new Vue({
+                el: '#workAea',
+                data: data1,
+                mounted: function () {
+                    this.getUser();
+                },
+                methods: {
+                   getUser: function () {
+                        var uid = getUrlParms("uid");
+                        var url = this.uri + "/" +uid;
+                        axios.get(url).then(function (response) {
+                            if(response.data.code == 0) {
+                                alert("订阅成功");
+                            } else {
+                                alert(JSON.stringify(response.data.message));
+                            }
+                        });
+                   }
+                }
+            });
+        };
+
+
+        //获取地址栏参数的函数
+        function getUrlParms(para){
+            var search=location.search; //页面URL的查询部分字符串
+            var arrPara=new Array(); //参数数组。数组单项为包含参数名和参数值的字符串，如“para=value”
+            var arrVal=new Array(); //参数值数组。用于存储查找到的参数值
+
+            if(search!=""){
+                var index=0;
+                search=search.substr(1); //去除开头的“?”
+                arrPara=search.split("&");
+
+                for(i in arrPara){
+                    var paraPre=para+"="; //参数前缀。即参数名+“=”，如“para=”
+                    if(arrPara[i].indexOf(paraPre)==0&& paraPre.length<arrPara[i].length){
+                        arrVal[index]=decodeURI(arrPara[i].substr(paraPre.length)); //顺带URI解码避免出现乱码
+                        index++;
+                    }
+                }
+            }
+
+            if(arrVal.length==1){
+                return arrVal[0];
+            }else if(arrVal.length==0){
+                return null;
+            }else{
+                return arrVal;
+            }
+        }
+    </script>
+</body>
+</html>
