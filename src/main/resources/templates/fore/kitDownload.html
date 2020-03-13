@@ -379,13 +379,14 @@
                    recodeUserUse: function() {
                        var url = "foreCheckLogin";
                        axios.get(url).then(function (response) {
-                           if(response.data.code === 0) {   //到这里说明登录成功
-                                var kid = getUrlParms("kid");
-                                var url = "userRecord" + "/" + kid;
-                                axios.post(url).then(function (response) {
+                           if (response.data.code === 0) {   //到这里说明登录成功
+                               var kid = getUrlParms("kid");
+                               var url = "userRecord" + "/" + kid;
+                               axios.post(url).then(function (response) {
 
-                                });
+                               });
                            }
+                       });
                    },
                    commitReviewFuc: function() {
                        var kid = getUrlParms("kid");
