@@ -23,9 +23,9 @@ public class CategoryController {
 
     @GetMapping("/kitcategories")
     public Page4Navigator<Category> list(@RequestParam(value = "start", defaultValue = "0") int start,
-                                         @RequestParam(value = "size", defaultValue = "13") int size) {
+                                         @RequestParam(value = "size", defaultValue = "5") int size) {
         start = start<0?0:start;
-        Page4Navigator page =categoryService.list(start, size, 5);  //5表示导航分页最多有5个，像 [1,2,3,4,5] 这样
+        Page4Navigator<Category> page =categoryService.list(start, size, 5);  //5表示导航分页最多有5个，像 [1,2,3,4,5] 这样
         return page;
     }
 

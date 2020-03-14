@@ -58,6 +58,8 @@ public class ForeRESTController {
     LogUserService logUserService;
     @Autowired
     private JavaMailSender mailSender;
+    @Autowired
+    PropertyService propertyService;
 
     /*
      * 前台登录
@@ -419,20 +421,35 @@ public class ForeRESTController {
     }
 
     /*
-        用户最近访问记录 存入redis缓存
+    分类列表
      */
+    @GetMapping("/forrGetCategory")
+    public List<Category> listCategory() {
+        List<Category> list = categoryService.list();
+        return list;
+    }
 
-    /*@Autowired
-    private RedisUtil redisUtil;
+    /*
+     获取单个分类
+     */
+    @GetMapping("/forGetCategory/{cid}")
+    public Category get(@PathVariable("cid") int cid) {
+        Category category = categoryService.get(cid);
+        return category;
+    }
 
-    @GetMapping(value = "/userRecord/{kid}")
-    public void addUserRecode(@PathVariable("kid") int kid,HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        int uid = user.getId();
-        String userid = String.valueOf(uid);
-        String kitid = String.valueOf(kid);
-        redisUtil.lSet(userid,kitid);
-        redisUtil.
+    /*
+     通过工具id获取分类
+     */
+    @GetMapping("/foreKits/{kid}")
+    public List<Property> getPropertyByCid(@PathVariable("kid") int kid) {
+        Kit kit = kitService.get(kid);
+        int cid = kit.getCategory().getId();
+        List<Property> list = propertyService.listByCategory(categoryService.get(cid));
+        return list;
+    }
 
-    }*/
+
+
+
 }

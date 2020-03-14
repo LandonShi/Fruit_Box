@@ -6,13 +6,13 @@
 		<link rel="stylesheet" type="text/css" href="../../static/css/me.css" th:href="@{/css/me.css}">
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.css">
 	</head>
-	<body style="background: #439B78;">
+	<body style="background: black">
 		<!-- 导航 -->
 		<nav class="ui inverted attached segment m-padded-tb-mini m-shadow-small" style="padding: 0;">
 			<div class="ui inverted secondary  menu">
-				<h4 class="ui teal header item head-title"><i class="cn flag"></i>管理员</h4>
+				<h4 class="ui green header item head-title"><i class="cn flag"></i>后台管理</h4>
 				<a href="manager" class="item head-a">用户管理</a>
-				<a href="kitCategoryList" class="item head-a">工具管理</a>
+				<a href="managerKitCategoryList" class="item head-a">工具管理</a>
 				<div class="right menu">
 					<a class="item" th:text="${session.manager.name}"></a>
 					<div id="zhuxiao" class="ui item">
@@ -25,8 +25,30 @@
 		<div id="categoryInfo" style="width:100%;height:700px;">
 			<!-- 工具分类列表 -->
 			<div class="m-padded-tb-big">
-			    <div class="ui container">				
-					<table class="ui compact orange table" style="text-align:center;">
+			    <div class="ui container">
+					<table class="ui compact table" style="text-align:center;">
+						<thead>
+							<tr style="height: 45px;">
+								<td style="width: 33%; height: 55px;">
+									<div class="field ui labeled input mini">
+										<div class="ui basic label green">分类名称</div>
+										<input type="text" name="name" v-model="bean.name" />
+									</div>
+								</td>
+								<td style="width: 33%;height: 55px;">
+									<input accept="image/*" type="file" name="image" @change="getFile($event)" />
+								</td>
+								<td style="width: 33%;height: 55px;">
+									<div class="ui button basic mini">
+										<a @click="add" style="color: green" href="#">
+											<i class="send icon green"></i>提交
+										</a>
+									</div>
+								</td>
+							</tr>
+						</thead>
+					</table>
+					<table class="ui compact table" style="text-align:center;">
 						<thead>
 							<tr style="height: 45px;">
 								<th style="width: 4%; height: 45px;">ID</th>
@@ -43,12 +65,12 @@
 								<td >{{bean.id}}</td>
 								<td ><img height="40px"  :src="'img/kitcategory/'+bean.id+'.jpg'"></td>
 								<td >{{ bean.name}}</td>
-								<td ><a :href="'admin_list_kitcategoryproperty?cid=' + bean.id "><i class="list layout icon green"></i></a></td>
-								<td ><a :href="'admin_list_kitlistun?cid=' + bean.id "><i class="setting icon large red"></i></a></td>
-								<td ><a :href="'admin_list_kitlist?cid=' + bean.id "><i class="setting icon large green"></i></a></td>
+								<td ><a :href="'admin_list_kitcategoryproperty?cid=' + bean.id "><i class="list layout icon orange"></i></a></td>
+								<td ><a :href="'admin_list_kitlistun?cid=' + bean.id "><i class="setting icon red"></i></a></td>
+								<td ><a :href="'admin_list_kitlist?cid=' + bean.id "><i class="setting icon green"></i></a></td>
 								<td>
-									<a class="ui mini teal button" :href="'admin_edit_kitcategory?id='+bean.id "><i class="tasks icon"></i>编辑</a>
-									<a class="ui mini red button" @click="deleteBean(bean.id)"><i class="remove icon"></i>删除</a>
+									<a class="ui mini green button basic" :href="'admin_edit_kitcategory?id='+bean.id "><i class="tasks icon"></i>编辑</a>
+									<a class="ui mini red button basic" @click="deleteBean(bean.id)"><i class="remove icon"></i>删除</a>
 								</td>
 							</tr>
 						</tbody>
@@ -79,7 +101,7 @@
 								</th>
 							</tr>
 						</tfoot>
-					</table>						    		
+					</table>
 			    </div>
 			</div>
 		</div>
@@ -134,7 +156,8 @@
 							formData.append("name", this.bean.name);
 							formData.append("image", this.file);
 							var url = this.uri;							
-							axios.post(url,formData).then(function(response){
+							axios.post(url,formData).then(function(){
+								alert("操作成功");
 								vue.list(0);
 								vue.bean = { id: 0, name: ''};
 								$("#categoryPic").val('');
@@ -146,7 +169,7 @@
 								return;
 							var url = this.uri+"/"+id;
 							axios.delete(url).then(function(response){
-								if(0!=response.data.length){
+								if(0 !== response.data.length){
 									alert(response.data);
 								}
 								else{
@@ -166,13 +189,10 @@
 		    		}		  	
 		    	});	
 		    });
-		    
-		    $('.menu.toggle').click(function () {
-			    $('.m-item').toggleClass('m-mobile-hide');
-			});
+
 			//判断是否为空
 			function checkEmpty(value,text){		
-				if(null==value || value.length==0){
+				if(null==value || value.length === 0){
 					alert(text+ "不能为空");
 					return false;
 				}
@@ -187,21 +207,21 @@
 			}
 		    //跳转函数
 		    function jump(page,vue){
-				if('first'== page && !vue.pagination.first)
+				if('first'=== page && !vue.pagination.first)
 					vue.list(0);
 				
-				else if('pre'== page &&	vue.pagination.hasPrevious )
+				else if('pre'=== page &&	vue.pagination.hasPrevious )
 					vue.list(vue.pagination.number-1);
 				
-				else if('next'== page && vue.pagination.hasNext)
+				else if('next'=== page && vue.pagination.hasNext)
 					vue.list(vue.pagination.number+1);					
 				
-				else if('last'== page && !vue.pagination.last)
+				else if('last'=== page && !vue.pagination.last)
 					vue.list(vue.pagination.totalPages-1);    	
 		    }
 		    //跳转函数
 		    function jumpByNumber(start,vue){
-		    	if(start!=vue.pagination.number)
+		    	if(start !== vue.pagination.number)
 					vue.list(start);       	
 		    }
 		</script>

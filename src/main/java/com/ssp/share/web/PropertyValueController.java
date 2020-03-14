@@ -31,4 +31,12 @@ public class PropertyValueController {
         return bean;
     }
 
+    @GetMapping("foreKitPV/{kid}/propertyValues")
+    public List<PropertyValue> listPV(@PathVariable("kid") int kid) {
+        Kit kit = kitService.get(kid);
+        propertyValueService.init(kit);
+        List<PropertyValue> propertyValues = propertyValueService.list(kit);
+        return propertyValues;
+    }
+
 }

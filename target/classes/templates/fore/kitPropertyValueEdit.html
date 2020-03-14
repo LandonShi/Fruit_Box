@@ -13,7 +13,7 @@
             <div class="ui secondary stackable menu">
                 <div class="item right"></div>
                 <a href="#" class="item head-a">首页</a>
-                <a href="kitList" class="item head-a">工具管理</a>
+                <a href="kitCategoryList" class="item head-a">工具分类</a>
                 <a href="kitUpload" class="item head-a">工具上传</a>
                 <a th:if="${null != session.user}" href="personalHomepage" th:text="${session.user.nickname}" class="item head-a"></a>
                 <a th:if="${null != session.user}" href="foreLogout" class="item head-a">退出</a>
@@ -26,19 +26,28 @@
         <div class="m-container-small m-padded-tb">
             <div class="ui container">
                 <div class="ui top attached segment">
-                    <div class="column">
-                        <div class="ui breadcrumb">
-                            <div class="breadcrumb-a" style="color: black">
-                                <i class="ui home icon blue"></i>所在位置：
-                                <a href="personalHomepage" class="section" style="color: gray;">个人中心</a>
-                                <div class="divider"> / </div>
-                                <a href="kitCategoryList" class="section" style="color: gray;">工具管理</a>
-                                <div class="divider"> / </div>
-                                <a href="#" class="section" style="color: gray;">{{ category.name}}</a>
-                                <div class="divider"> / </div>
-                                <a href="#">{{kit.name}}</a>
-                                <div class="divider"> / </div>
-                                <div class="active section">设置属性</div>
+                    <div class="ui middle aligned two column grid">
+                        <div class="column">
+                            <div class="ui breadcrumb">
+                                <div class="breadcrumb-a" style="color: black">
+                                    <i class="ui home icon blue"></i>
+                                    <a href="personalHomepage" class="section" style="color: gray;">个人中心</a>
+                                    <div class="divider"> / </div>
+                                    <a href="kitCategoryList" class="section" style="color: gray;">工具管理</a>
+                                    <div class="divider"> / </div>
+                                    <a href="#" class="section" style="color: gray;">{{ category.name}}</a>
+                                    <div class="divider"> / </div>
+                                    <a href="#">{{kit.name}}</a>
+                                    <div class="divider"> / </div>
+                                    <div class="active section">设置属性</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="column right aligned">
+                            <div class="ui right aligned container">
+                                <button type="button" class="ui teal button mini basic" onclick="window.history.go(-1)" >
+                                    <i class="arrow left icon"></i>返回
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -46,18 +55,20 @@
                 <table class="ui compact orange table" style="text-align:center;">
                     <thead>
                         <tr style="height: 45px;">
-                            <th style="width: 15%;">ID</th>
+                            <th style="width: 10%;">属性ID</th>
                             <th style="width: 18%;">属性</th>
+                            <th style="width: 15%;">{{kit.name + "（ID）"}}</th>
                             <th style="width: 40%;">属性值</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="bean in beans">
-                            <td>{{bean.property.id}}</td>
-                            <td>{{bean.property.name}}</td>
+                        <tr v-for="pv in pvs">
+                            <td>{{pv.property.id}}</td>
+                            <td>{{pv.property.name}}</td>
+                            <td>{{kit.id}}</td>
                             <td>
                                 <div class="ui input" style="width: 80%;">
-                                    <input @keyup.enter="update(bean)" class="pvValue" :id="'pvid' + bean.id" type="text" v-model="bean.value" />
+                                    <input @keyup.enter="update(pv)"  type="text" v-model="pv.value"/>
                                 </div>
                             </td>
                         </tr>
@@ -81,8 +92,7 @@
             var kid = getUrlParms("kid");
             var data1 = {
                 uri:'propertyValues',
-                uri2: 'kits',
-                beans: [],
+                pvs:[],
                 kit: '',
                 category:''
             };
@@ -91,30 +101,29 @@
                 el: '#workingArea',
                 data: data1,
                 mounted:function(){ //mounted　表示这个 Vue 对象加载成功了
-                    this.getKit(kid);
-                    this.list();
+                    this.getCategoryByKid(kid);
+                    this.listPropertyValue();
                 },
                 methods: {
-                    list:function(){
-                        var url = this.uri2 + "/" + kid + "/"+ this.uri;
-                        axios.get(url).then(function(response) {
-                            vue.beans = response.data;
+                    listPropertyValue: function() {
+                        var url = "foreKitPV/" + kid + "/propertyValues";
+                        axios.get(url).then(function (response) {
+                            vue.pvs = response.data;
                         });
                     },
-                    getKit:function(kid){
+                    getCategoryByKid:function(kid){
                         var url = "kits/" + kid;
                         axios.get(url).then(function(response) {
                             vue.kit = response.data;
                             vue.category = vue.kit.category;
                         })
                     },
-                    update:function(bean){
+                    update:function(pv){
                         var url =  this.uri;
-                        axios.put(url,bean).then(function(response) {
+                        axios.put(url,pv).then(function() {
                             alert("更新成功");
-                            this.list();
                         });
-                    },
+                    }
                 }
             });
         });

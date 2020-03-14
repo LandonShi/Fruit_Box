@@ -1,17 +1,21 @@
 package com.ssp.share.web;
 
 import com.ssp.share.pojo.Property;
+import com.ssp.share.service.CategoryService;
 import com.ssp.share.service.PropertyService;
 import com.ssp.share.util.Page4Navigator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @RestController
 public class PropertyController {
     @Autowired
     PropertyService propertyService;
+    @Autowired
+    CategoryService categoryService;
 
     @GetMapping("/kitcategories/{cid}/properties")
     public Page4Navigator<Property> list(@PathVariable("cid") int cid, @RequestParam(value = "start", defaultValue = "0") int start, @RequestParam(value = "size", defaultValue = "5") int size) {

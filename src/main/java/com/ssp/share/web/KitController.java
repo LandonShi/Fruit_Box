@@ -40,6 +40,7 @@ public class KitController {
         return page;
     }
 
+
     /*
     后台抽取验证状态数据
      */
@@ -62,9 +63,9 @@ public class KitController {
         return lists;
     }
 
-    @GetMapping("/kits/{id}")
-    public Kit get(@PathVariable("id") int id) {
-        Kit bean=kitService.get(id);
+    @GetMapping("/kits/{kid}")
+    public Kit get(@PathVariable("kid") int kid) {
+        Kit bean = kitService.get(kid);
         return bean;
     }
 

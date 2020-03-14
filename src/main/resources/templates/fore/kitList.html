@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8">
-    <title>工具管理</title>
+    <title>工具管理/已上传列表</title>
     <link rel="stylesheet" type="text/css" href="../../static/css/me.css" th:href="@{/css/me.css}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.css">
 </head>
@@ -13,7 +13,7 @@
             <div class="ui secondary stackable menu">
                 <div class="item right"></div>
                 <a href="#" class="item head-a">首页</a>
-                <a href="kitList" class="item head-a">工具管理</a>
+                <a href="kitCategoryList" class="item head-a">工具分类</a>
                 <a href="kitUpload" class="item head-a">工具上传</a>
                 <a th:if="${null != session.user}" href="personalHomepage" th:text="${session.user.nickname}" class="item head-a"></a>
                 <a th:if="${null != session.user}" href="foreLogout" class="item head-a">退出</a>
@@ -26,22 +26,31 @@
         <div class="m-container-big m-padded-tb-big">
             <div style="margin: 15px;">
                 <div class="ui top attached segment">
-                    <div class="column">
-                        <div class="ui breadcrumb">
-                            <div class="breadcrumb-a" style="color: black">
-                                <i class="ui home icon blue"></i>所在位置：
-                                <a href="personalHomepage" class="section" style="color: gray;">个人中心</a>
-                                <div class="divider"> / </div>
-                                <a href="kitCategoryList" class="section" style="color: gray;">工具管理</a>
-                                <div class="divider"> / </div>
-                                <a href="#" class="section" style="color: gray;">{{ category.name}}</a>
-                                <div class="divider"> / </div>
-                                <div class="active section">已上传工具列表</div>
+                    <div class="ui middle aligned two column grid">
+                        <div class="column">
+                            <div class="ui breadcrumb">
+                                <div class="breadcrumb-a" style="color: black">
+                                    <i class="ui home icon blue"></i>所在位置：
+                                    <a href="personalHomepage" class="section" style="color: gray;">个人中心</a>
+                                    <div class="divider"> / </div>
+                                    <a href="kitCategoryList" class="section" style="color: gray;">工具分类</a>
+                                    <div class="divider"> / </div>
+                                    <a href="#" class="section" style="color: gray;">{{ category.name}}</a>
+                                    <div class="divider"> / </div>
+                                    <div class="active section">已上传工具列表</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="column right aligned">
+                            <div class="ui right aligned container">
+                                <button type="button" class="ui teal button mini basic" onclick="window.history.go(-1)" >
+                                    <i class="arrow left icon"></i>返回
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div v-if="beans.length != 0">
+                <div v-if="beans.length !== 0">
                     <table class="ui compact orange table" style="text-align:center;">
                         <thead>
                         <tr style="height: 45px;">
@@ -149,12 +158,13 @@
                 el: '#categoryInfo',
                 data: data1Vue,
                 mounted: function() {
-                    this.getCategory(cid);
+                    this.getCategory();
                     this.list(0);
                 },
                 methods: {
-                    getCategory: function(cid){
-                        var url = "kitcategories/"+cid;
+                    getCategory: function(){
+                        var cid = getUrlParms("cid");
+                        var url = "forGetCategory/"+ cid;
                         axios.get(url).then(function(response) {
                             vue.category = response.data;
                         })

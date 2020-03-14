@@ -25,21 +25,31 @@
 			<!-- 工具分类列表 -->
 			<div class="m-container m-padded-tb-big">
 			    <div class="ui container">
-					<div class="ui top attached segment">
-						<div class="column">
-							<div class="ui breadcrumb">
-								<div class="breadcrumb-a" style="color: black">
-									<i class="ui home icon blue"></i>所在位置：
-									<a href="personalHomepage" class="section" style="color: gray;">个人中心</a>
-									<div class="divider"> / </div>
-									<a href="kitList" class="section" style="color: gray;">工具管理</a>
-									<div class="divider"> / </div>
-									<div class="active section">工具分类</div>
+					<div class="ui top attached segment" style="margin-top: 40px;">
+						<div class="ui middle aligned two column grid">
+							<div class="column">
+								<div class="ui breadcrumb">
+									<div class="breadcrumb-a" style="color: black">
+										<i class="ui home icon blue"></i>所在位置：
+										<a href="personalHomepage" class="section" style="color: gray;">个人中心</a>
+										<div class="divider"> / </div>
+										<a href="kitList" class="section" style="color: gray;">工具管理</a>
+										<div class="divider"> / </div>
+										<div class="active section">工具分类</div>
+									</div>
+								</div>
+							</div>
+							<div class="column right aligned">
+								<div class="ui right aligned container">
+									<button type="button" class="ui teal button mini basic" onclick="window.history.go(-1)" >
+										<i class="arrow left icon"></i>返回
+									</button>
 								</div>
 							</div>
 						</div>
 					</div>
-					<table class="ui compact orange table" style="text-align:center;">
+					<div class="ui attached segment">
+						<table class="ui compact table" style="text-align:center;">
 						<thead>
 							<tr style="height: 45px;">
 								<th style="height: 45px;">分类名称</th>
@@ -54,7 +64,35 @@
 								</td>
 							</tr>
 						</tbody>
-					</table>						    		
+						<tfoot>
+							<tr>
+								<th colspan="10" >
+									<!-- 分页 -->
+									<div class="ui pagination menu" >
+										<div class="ui pagination menu" style="border: 0;">
+											<a :class="{ disabled: pagination.first }" class="icon item" href="#nowhere" @click="jump('first')">
+												<i class="angle double left icon"></i>
+											</a>
+											<a :class="{ disabled: !pagination.hasPrevious }" class="icon item">
+												<i class="angle left icon"></i>
+											</a>
+
+											<div v-for="i in pagination.navigatepageNums" class="disabled item">
+												<a href="#nowhere" @click="jumpByNumber(i-1)" >{{i}}</a>
+											</div>
+											<a :class="{ disabled: !pagination.hasNext }" class="icon item" href="#nowhere" @click="jump('next')">
+												<i class="angle right icon"></i>
+											</a>
+											<a :class="{ disabled: pagination.last }" class="icon item" href="#nowhere" @click="jump('last')">
+												<i class="angle double right icon"></i>
+											</a>
+										</div>
+									</div>
+								</th>
+							</tr>
+						</tfoot>
+					</table>
+					</div>
 			    </div>
 			</div>
 		</div>
@@ -69,6 +107,7 @@
 					uri:'kitcategories',
 					beans: [],
 					bean: { id: 0, name: ''},
+					pagination:{}
 		    	}; 	
 		    	//vueModel
 		    	var vue = new Vue({
@@ -81,12 +120,39 @@
 						list: function (start) {
 							var url = this.uri + "?start=" + start;
 							axios.get(url).then(function (response) {
+								vue.pagination = response.data;
 								vue.beans = response.data.content;
 							});
 						},
+						jump: function(page){
+							jump(page,vue);
+						},
+						jumpByNumber: function(start){
+							jumpByNumber(start,vue);
+						}
 					}
 		    	});	
 		    });
+
+			//跳转函数
+			function jump(page,vue){
+				if('first'=== page && !vue.pagination.first)
+					vue.list(0);
+
+				else if('pre'=== page &&	vue.pagination.hasPrevious )
+					vue.list(vue.pagination.number-1);
+
+				else if('next'=== page && vue.pagination.hasNext)
+					vue.list(vue.pagination.number+1);
+
+				else if('last'=== page && !vue.pagination.last)
+					vue.list(vue.pagination.totalPages-1);
+			}
+			//跳转函数
+			function jumpByNumber(start,vue){
+				if(start !== vue.pagination.number)
+					vue.list(start);
+			}
 		</script>
 	</body>
 </html>

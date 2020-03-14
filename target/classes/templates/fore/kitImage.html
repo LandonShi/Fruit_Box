@@ -25,31 +25,40 @@
         <div class="m-container m-padded-tb-big">
             <div class="ui container">
                 <div class="ui top attached segment">
-                    <div class="column">
-                        <div class="ui breadcrumb">
-                            <div class="breadcrumb-a" style="color: black">
-                                <i class="ui home icon blue"></i>所在位置：
-                                <a href="personalHomepage" class="section" style="color: gray;">个人中心</a>
-                                <div class="divider"> / </div>
-                                <a href="kitCategoryList" class="section" style="color: gray;">工具管理</a>
-                                <div class="divider"> / </div>
-                                <a href="#" class="section" style="color: gray;">{{ category.name}}</a>
-                                <div class="divider"> / </div>
-                                <a href="#">{{kit.name}}</a>
-                                <div class="divider"> / </div>
-                                <div class="active section">图片管理</div>
+                    <div class="ui middle aligned two column grid">
+                        <div class="column">
+                            <div class="ui breadcrumb">
+                                <div class="breadcrumb-a" style="color: black">
+                                    <i class="ui home icon blue"></i>所在位置：
+                                    <a href="personalHomepage" class="section" style="color: gray;">个人中心</a>
+                                    <div class="divider"> / </div>
+                                    <a href="kitCategoryList" class="section" style="color: gray;">工具管理</a>
+                                    <div class="divider"> / </div>
+                                    <a href="#" class="section" style="color: gray;">{{ category.name}}</a>
+                                    <div class="divider"> / </div>
+                                    <a href="#">{{kit.name}}</a>
+                                    <div class="divider"> / </div>
+                                    <div class="active section">图片管理</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="column right aligned">
+                            <div class="ui right aligned container">
+                                <button type="button" class="ui teal button mini basic" onclick="window.history.go(-1)" >
+                                    <i class="arrow left icon"></i>返回
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="ui stackable grid">
+                <div class="ui middle aligned sixteen column grid">
                     <!-- 左边单个图片列表 -->
                     <div class="eight wide column">
                         <!-- 内容 -->
                         <div class="ui attached segment">
                             <div class="ui vertical segment m-padded-tb-large">
                                 <div class="ui mobile reversed stackable grid">
-                                    <div class="wide column">
+                                    <div class="column">
                                         <div class="ui top attached segment">
                                             <div class="ui middle aligned column grid">
                                                 <div class="column">
@@ -62,7 +71,7 @@
                                                 <div class="ui mobile reversed stackable grid">
                                                     <table style="width: 100%; text-align: center;color: black;">
                                                         <tr>
-                                                            <td>请选择本地图片 尺寸400X400 为佳</td>
+                                                            <td>请选择本地图片 尺寸600X380 为佳</td>
                                                         </tr>
                                                         <tr>
                                                             <td>
@@ -115,7 +124,7 @@
                         <div class="ui attached segment">
                             <div class="ui vertical segment m-padded-tb-large">
                                 <div class="ui mobile reversed stackable grid">
-                                    <div class="wide column">
+                                    <div class="column">
                                         <div class="ui top attached segment">
                                             <div class="ui middle aligned column grid">
                                                 <div class="column">

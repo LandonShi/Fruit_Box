@@ -10,7 +10,7 @@
 				margin: 0;
 				width: 100%;
 				color: #fff;
-				background: linear-gradient(-45deg, #ee7752, lightskyblue, darkorange, #23d5ab);
+				background: linear-gradient(-45deg, green, lightskyblue, darkorange, #23d5ab);
 				background-size: 400% 400%;animation: gradientBG 15s ease infinite;
 			}
 		</style>
@@ -18,78 +18,77 @@
 	<body>
 		<!-- 导航 -->
 		<div id="workArea">
-		<nav class="ui attached segment m-shadow-small" style="padding: 0;">
-			<div class="nav-top">
-				<div class="ui secondary stackable menu">
-					<h4 class="ui teal header item head-title"><i class="cn flag"></i>呆果果的宝函</h4>
-					<a href="#" class="item head-a">首页</a>
-					<a href="#" class="item head-a">视频</a>
-					<a href="kit" class="item head-a">工具</a>
-					<a href="#" class="item head-a">技术摘要</a>
-					<a href="#" class="item head-a">关于本站</a>
-					<div class="item right"></div>
-					<a th:if="${null==session.user}" href="foreLogin" class="item head-a">登录</a>
-					<a th:if="${null==session.user}" href="register" class="item head-a">注册</a>
-					<img th:if="${null!=session.user}" class="ui avatar image" :src="'img/avatar/' + user.id + '.jpg'" style="margin-top: 7px;">
-					<a th:if="${null!=session.user}" href="personalHomepage" th:text="${session.user.nickname}" class="item head-a"></a>
-					<a th:if="${null!=session.user}" href="foreLogout" class="item head-a">退出</a>
+			<nav class="ui attached segment m-shadow-small" style="padding: 0;">
+				<div class="nav-top">
+					<div class="ui secondary stackable menu">
+						<h5 class="ui teal header item head-title"><i class="cn flag"></i>呆果果的宝函</h5>
+						<a href="#" class="item head-a">首页</a>
+						<a href="kit" class="item head-a">工具</a>
+						<a href="#" class="item head-a">文章</a>
+						<div class="item right"></div>
+						<a th:if="${null==session.user}" href="foreLogin" class="item head-a">登录</a>
+						<a th:if="${null==session.user}" href="register" class="item head-a">注册</a>
+						<img th:if="${null!=session.user}" class="ui avatar image" :src="'img/avatar/' + user.id + '.jpg'" style="margin-top: 7px;">
+						<a th:if="${null!=session.user}" href="personalHomepage" th:text="${session.user.nickname}" class="item head-a"></a>
+						<a th:if="${null!=session.user}" href="foreLogout" class="item head-a">退出</a>
+					</div>
 				</div>
-			</div>
-		</nav>
+			</nav>
 
-		<div style="height: 20px;"></div>
-		<div class="m-container m-padded-tb-big">
-			<div class="ui container" style="width: 100%;">
-				<div>
-					<form>
-						<div class="ui search" style="width: 100%;">
-							<div class="ui inverted action input " style="width: 40%; margin-left: 30%;margin-right:30%;">
-								<input type="text" name="keyword" placeholder="" v-model="keyword">
-								<div class="ui animated button inverted">
-									<div class="visible content">
-										<i class="right arrow icon orange"></i>
-									</div>
-									<div class="hidden content">
-										<a @click="search"><i class="search icon"></i></a>
+			<div style="height: 20px;"></div>
+			<div class="m-container m-padded-tb-big">
+				<div class="ui container" style="width: 100%;">
+					<div>
+						<form>
+							<div class="ui search" style="width: 100%;">
+								<div class="ui inverted action input small" style="width: 40%; margin-left: 30%;margin-right:30%;">
+									<input type="text" name="keyword" placeholder="" v-model="keyword">
+									<div class="ui animated button inverted mini">
+										<div class="visible content">
+											<i class="right arrow icon"></i>
+										</div>
+										<div class="hidden content">
+											<a @click="search"><i class="search icon"></i></a>
+										</div>
 									</div>
 								</div>
 							</div>
-						</div>
-					</form>
-				</div>
-				<a class="ui red tag label mini">工具集</a>
-				<div style="height: 10px;"></div>
-				<div class="ui attached tabular menu" style="width: 100%;">
-					<a style="font-size: 14px; font-weight: 600;"
-					   v-for="(c,index) in categories" :key="c.id" class="item" :class="{active:num === index}" @click="getNum(index)">
-						{{ c.name }}
-					</a>
-				</div>
-				<div :cid="c.id" v-for="(c,index) in categories" class="ui bottom attached active tab segment" v-show="index == num">
-					<div v-for="kits in c.kitsByRow">
-						<div class="ui sixteen column grid">
-							<div class="four wide column" v-for="kit in kits" >
-								<div class="ui special cards">
-									<div class="card m-shadow-small kit-card">
-										<div class="dimmable image">
-											<img :src="'img/kitSingle/'+kit.firstKitImage.id+'.jpg'" />
-										</div>
-										<div class="content">
-											<div class="ui header">{{ kit.name}}</div>
-											<div class="meta">
-												<p>{{ kit.description.substr(0,26)}}</p>
-												<span title="下载量"><i class="download icon" style="color: blueviolet;"></i>{{ kit.downloadTimes}}</span>
-												<span title="上架时间"><i class="moon icon" style="color: navajowhite"></i>{{ kit.updateTime.substr(0,10)}}</span>
-												<span title="评论数"><i class="comments icon" style="color: pink"></i>&nbsp;{{kit.reviewCount}}</span>
+						</form>
+					</div>
+					<a class="ui red tag label mini">工具集</a>
+					<div style="height: 10px;"></div>
+					<div class="ui attached tabular menu" style="width: 100%;">
+						<a style="font-size: 13px;"
+						   v-for="(c,index) in categories" :key="c.id" class="item" :class="{active:num === index}" @click="getNum(index)">
+							{{ c.name }}
+						</a>
+					</div>
+					<div :cid="c.id" v-for="(c,index) in categories" class="ui bottom attached active tab segment" v-show="index == num">
+						<div v-for="kits in c.kitsByRow">
+							<div class="ui sixteen column grid">
+								<div class="four wide column" v-for="kit in kits" >
+									<div class="ui special cards">
+										<div class="card m-shadow-small kit-card">
+											<div class="dimmable image">
+												<img :src="'img/kitSingle/'+kit.firstKitImage.id+'.jpg'" />
 											</div>
-										</div>
-										<div class="extra content">
-											<a :href="'fore_kit_download?kid=' + kit.id"><i class="users icon"></i>在线使用或下载</a>
-										</div>
-										<div class="ui bottom right attached label orange">
-											<font style="vertical-align: inherit;">
-												<font style="vertical-align: inherit;">{{kit.flag}}</font>
-											</font>
+											<div class="content">
+												<div class="ui header">{{ kit.name}}</div>
+												<div class="meta">
+													<p>{{ kit.description.substr(0,26)}}</p>
+													<span title="下载量"><i class="download icon" style="color: blueviolet;"></i>{{ kit.downloadTimes}}</span>
+													<span title="上架时间"><i class="moon icon" style="color: navajowhite"></i>{{ kit.updateTime.substr(0,10)}}</span>
+													<span title="评论数"><i class="comments icon" style="color: pink"></i>&nbsp;{{kit.reviewCount}}</span>
+												</div>
+											</div>
+											<div class="extra content">
+												<a :href="'fore_kit_download?kid=' + kit.id"><i class="users icon"></i>在线使用或下载</a>
+											</div>
+											<div class="ui bottom right attached label orange">
+												<font style="vertical-align: inherit;">
+													<font style="vertical-align: inherit;">{{kit.flag}}</font>
+												</font>
+											</div>
 										</div>
 									</div>
 								</div>
@@ -99,8 +98,7 @@
 				</div>
 			</div>
 		</div>
-
-		</div>
+		<div style="height: 65px;"></div>
 		<!-- 底部 -->
 		<footer>
 			<div class="ui inverted vertical segment m-padded-tb-large">
